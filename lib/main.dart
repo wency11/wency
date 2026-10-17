@@ -4,6 +4,7 @@ import 'package:provider/provider.dart';
 
 import 'dashboard_data.dart';
 import 'dashboard_screen.dart';
+import 'l10n/app_localizations.dart';
 
 class AppConstants {
   // Pagsanjan, Laguna (default farm coordinates)
@@ -128,11 +129,23 @@ class PagriApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return ChangeNotifierProvider(
       create: (_) => DashboardProvider()..start(),
-      child: MaterialApp(
-        title: 'PAGRI - Pagsanjan Agriculture',
-        debugShowCheckedModeBanner: false,
-        theme: AppTheme.light,
-        home: const DashboardScreen(),
+      child: Consumer<DashboardProvider>(
+        builder: (_, p, __) => MaterialApp(
+          title: 'PAGRI - Pagsanjan Agriculture',
+          debugShowCheckedModeBanner: false,
+          theme: AppTheme.light,
+          locale: Locale(p.isTagalog ? 'tl' : 'en'),
+          localizationsDelegates: AppLocalizations.localizationsDelegates,
+          supportedLocales: AppLocalizations.supportedLocales,
+          // Laki ng teksto ng buong app (galing sa Settings > Itsura ng App)
+          builder: (context, child) => MediaQuery(
+            data: MediaQuery.of(context).copyWith(
+              textScaler: TextScaler.linear(p.textScale),
+            ),
+            child: child!,
+          ),
+          home: const DashboardScreen(),
+        ),
       ),
     );
   }
