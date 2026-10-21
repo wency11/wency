@@ -51,18 +51,19 @@ class HeatIndex {
   }
 }
 
+/// Mga kulay na akma sa magaan na background.
 Color heatColor(HeatLevel l) {
   switch (l) {
     case HeatLevel.normal:
-      return const Color(0xFF43A047);
+      return const Color(0xFF2E9E4F);
     case HeatLevel.caution:
-      return const Color(0xFFF9A825);
+      return const Color(0xFFE59A00);
     case HeatLevel.extremeCaution:
       return const Color(0xFFEF6C00);
     case HeatLevel.danger:
       return const Color(0xFFD84315);
     case HeatLevel.extremeDanger:
-      return const Color(0xFFB71C1C);
+      return const Color(0xFFC62828);
   }
 }
 

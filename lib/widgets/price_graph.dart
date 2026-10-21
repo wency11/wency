@@ -37,7 +37,7 @@ class _PricePainter extends CustomPainter {
   static const double _left = 40, _right = 14, _top = 18, _bottom = 24;
 
   void _text(Canvas canvas, String s, Offset at,
-      {double size = 10, Color c = Colors.black54, FontWeight w = FontWeight.w500, bool center = false, bool rightAlign = false}) {
+      {double size = 10, Color c = const Color(0xFF5F7A66), FontWeight w = FontWeight.w500, bool center = false, bool rightAlign = false}) {
     final tp = TextPainter(
       text: TextSpan(text: s, style: TextStyle(fontSize: size, color: c, fontWeight: w)),
       textDirection: TextDirection.ltr,
@@ -72,7 +72,7 @@ class _PricePainter extends CustomPainter {
 
     // Grid at presyo sa kaliwa
     final grid = Paint()
-      ..color = const Color(0xFFE3EDE1)
+      ..color = const Color(0xFFD3E6CB)
       ..strokeWidth = 1;
     final decimals = (hi - lo) < 6 ? 1 : 0;
     for (var k = 0; k <= 3; k++) {
@@ -84,7 +84,7 @@ class _PricePainter extends CustomPainter {
 
     // Batayan: kasalukuyang presyo (putol-putol)
     final base = Paint()
-      ..color = Colors.black38
+      ..color = const Color(0xFF5F7A66)
       ..strokeWidth = 1.2;
     final by = y(values.first);
     for (double dx = _left; dx < size.width - _right; dx += 8) {
