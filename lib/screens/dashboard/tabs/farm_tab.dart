@@ -1,31 +1,24 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:provider/provider.dart';
 
+import '../../../core/crop_data.dart';
 import '../../../core/crop_l10n.dart';
 import '../../../dashboard_data.dart';
 import '../../../l10n/app_localizations.dart';
 import '../../../main.dart';
+import '../../../models/farm_planting.dart';
+import '../../../providers/farm_input_provider.dart';
+import '../../../services/dss_service.dart';
 import '../../../widgets/common_widgets.dart';
 import '../../../widgets/crop_image.dart';
-import '../crop_detail_screen.dart';
+import '../../../widgets/dss_common.dart';
 
-/// Tantiyang araw bago maani (min, max). Ayon sa gabay sa bawat pananim.
-/// Walang laman ang Niyog at Calamansi dahil taon ang hinihintay.
-const Map<String, (int, int)> _harvestDays = {
-  'Rice': (110, 120),
-  'Eggplant': (90, 120),
-  'Tomato': (90, 110),
-  'String beans': (60, 70),
-  'Banana': (270, 360),
-  'Ampalaya': (60, 90),
-  'Squash': (90, 120),
-  'Sweet potato': (90, 120),
-  'Taro': (180, 270),
-};
-
+/// "My Farm": lahat ng makikita rito ay galing sa mga tanim na inilagay ng magsasaka sa DSS tab.
 class FarmTab extends StatelessWidget {
   final DashboardProvider p;
-  const FarmTab({super.key, required this.p});
+  final VoidCallback? onOpenDss;
+  const FarmTab({super.key, required this.p, this.onOpenDss});
 
   PlantingGuide? _guideFor(String crop) {
     for (final g in p.guides) {
@@ -34,80 +27,99 @@ class FarmTab extends StatelessWidget {
     return null;
   }
 
-  /// Pinakabagong tala ng pananim (kung may).
-  CropRecord? _latestRecord(String crop, {bool? harvested}) {
-    CropRecord? best;
-    for (final r in p.history) {
-      if (r.crop != crop) continue;
-      if (harvested != null && r.isHarvested != harvested) continue;
-      if (best == null || r.datePlanted.isAfter(best.datePlanted)) best = r;
+  @override
+  Widget build(BuildContext context) {
+    final t = AppLocalizations.of(context)!;
+    final farm = context.watch<FarmInputProvider>();
+    final profile = p.profile!;
+    final plantings = farm.plantings;
+
+    // Ang kabuuang lupa ay galing sa inilagay ng farmer sa DSS.
+    final totalLand = farm.landTotal;
+    var expectedKg = 0.0;
+    for (final pl in plantings) {
+      expectedKg += DssService.estimate(pl)?.kgMid ?? 0;
     }
-    return best;
-  }
 
-  bool _isGrowing(String crop) => _latestRecord(crop, harvested: false) != null;
-
-  void _open(BuildContext context, PlantingGuide g) {
-    Navigator.of(context).push(MaterialPageRoute(builder: (_) => CropDetailScreen(guide: g, p: p)));
+    return AnimatedTabList(items: [
+      _ProfileCard(profile: profile, crops: farm.cropIds),
+      const SizedBox(height: 16),
+      _LandCard(total: totalLand, plantings: plantings, sqm: farm.useSqm, onSetUnit: farm.setUseSqm, onOpenDss: onOpenDss),
+      const SizedBox(height: 16),
+      if (plantings.isNotEmpty) ...[
+        Row(children: [
+          Expanded(child: _StatTile(icon: Icons.spa_rounded, color: AppColors.fern, value: '${plantings.length}', label: t.plotGrowing)),
+          const SizedBox(width: 10),
+          Expanded(child: _StatTile(icon: Icons.eco_rounded, color: AppColors.soil, value: '${farm.cropIds.length}', label: t.farmCropsTitle)),
+          const SizedBox(width: 10),
+          Expanded(
+            child: _StatTile(
+              icon: Icons.scale_rounded,
+              color: AppColors.leaf,
+              value: DssFmt.kg(expectedKg),
+              label: t.dssExpectedYield,
+            ),
+          ),
+        ]),
+        const SizedBox(height: 16),
+        SectionTitle(icon: Icons.eco_rounded, text: t.farmCropsTitle, subtitle: t.farmCropsSub),
+        ...plantings.map((pl) {
+          final guide = _guideFor(pl.crop);
+          return Padding(
+            padding: const EdgeInsets.only(bottom: 12),
+            child: _CropPlotCard(
+              planting: pl,
+              guide: guide,
+              totalHectares: totalLand,
+              sqm: farm.useSqm,
+              onTap: onOpenDss == null
+                  ? null
+                  : () {
+                farm.select(pl.id);
+                onOpenDss!();
+              },
+            ),
+          );
+        }),
+        Padding(
+          padding: const EdgeInsets.symmetric(vertical: 2),
+          child: Text(t.farmEstimateNote, style: const TextStyle(fontSize: 12, color: AppColors.muted)),
+        ),
+        const SizedBox(height: 10),
+        Center(
+          child: TextButton.icon(
+            onPressed: onOpenDss,
+            icon: const Icon(Icons.edit_rounded, size: 18),
+            label: Text(t.dssEditPlanting),
+          ),
+        ),
+      ] else
+        _EmptyFarm(onAdd: onOpenDss),
+      const SizedBox(height: 24),
+    ]);
   }
+}
+
+class _EmptyFarm extends StatelessWidget {
+  final VoidCallback? onAdd;
+  const _EmptyFarm({required this.onAdd});
 
   @override
   Widget build(BuildContext context) {
     final t = AppLocalizations.of(context)!;
-    final profile = p.profile!;
-
-    final growing = p.plots.where((pl) => _isGrowing(pl.crop)).length;
-    final harvested = p.plots.length - growing;
-    final totalYield = p.history.where((r) => r.isHarvested).fold<double>(0, (s, r) => s + r.yieldKg);
-
-    return AnimatedTabList(items: [
-      _ProfileCard(profile: profile),
-      const SizedBox(height: 16),
-      _LandCard(profile: profile, plots: p.plots),
-      const SizedBox(height: 16),
-
-      // Buod
-      Row(children: [
-        Expanded(child: _StatTile(icon: Icons.spa_rounded, color: AppColors.fern, value: '$growing', label: t.plotGrowing)),
-        const SizedBox(width: 10),
-        Expanded(child: _StatTile(icon: Icons.inventory_2_rounded, color: AppColors.soil, value: '$harvested', label: t.plotHarvested)),
-        const SizedBox(width: 10),
-        Expanded(
-          child: _StatTile(
-            icon: Icons.scale_rounded,
-            color: AppColors.leaf,
-            value: '${NumberFormat('#,###').format(totalYield)} kg',
-            label: t.farmTotalHarvest,
-          ),
-        ),
+    return GlassCard(
+      padding: const EdgeInsets.all(20),
+      child: Column(children: [
+        const Icon(Icons.spa_rounded, size: 44, color: AppColors.leaf),
+        const SizedBox(height: 10),
+        Text(t.dssEmptyTitle, style: const TextStyle(fontWeight: FontWeight.w900, fontSize: 17)),
+        const SizedBox(height: 6),
+        Text(t.dssEmptyBody,
+            textAlign: TextAlign.center, style: const TextStyle(color: AppColors.muted, height: 1.35, fontSize: 13)),
+        const SizedBox(height: 14),
+        FilledButton.icon(onPressed: onAdd, icon: const Icon(Icons.add_rounded), label: Text(t.dssAddPlanting)),
       ]),
-      const SizedBox(height: 16),
-
-      // Mga pananim
-      SectionTitle(icon: Icons.eco_rounded, text: t.farmCropsTitle, subtitle: t.farmCropsSub),
-      ...p.plots.map((pl) {
-        final guide = _guideFor(pl.crop);
-        return Padding(
-          padding: const EdgeInsets.only(bottom: 12),
-          child: _CropPlotCard(
-            plot: pl,
-            guide: guide,
-            totalHectares: profile.landSizeHectares,
-            growingRecord: _latestRecord(pl.crop, harvested: false),
-            lastHarvest: _latestRecord(pl.crop, harvested: true),
-            onTap: guide == null ? null : () => _open(context, guide),
-          ),
-        );
-      }),
-      Padding(
-        padding: const EdgeInsets.symmetric(vertical: 2),
-        child: Text(t.farmEstimateNote, style: const TextStyle(fontSize: 12, color: AppColors.muted)),
-      ),
-      const SizedBox(height: 14),
-
-      _CropHistoryList(records: p.history),
-      const SizedBox(height: 24),
-    ]);
+    );
   }
 }
 
@@ -117,7 +129,8 @@ class FarmTab extends StatelessWidget {
 
 class _ProfileCard extends StatelessWidget {
   final FarmerProfile profile;
-  const _ProfileCard({required this.profile});
+  final List<String> crops;
+  const _ProfileCard({required this.profile, required this.crops});
 
   @override
   Widget build(BuildContext context) {
@@ -132,7 +145,7 @@ class _ProfileCard extends StatelessWidget {
               const CircleAvatar(
                 radius: 30,
                 backgroundColor: AppColors.leaf,
-                child: Icon(Icons.agriculture, color: AppColors.bg0, size: 32),
+                child: Icon(Icons.agriculture, color: Colors.white, size: 32),
               ),
               const SizedBox(width: 14),
               Expanded(
@@ -147,19 +160,21 @@ class _ProfileCard extends StatelessWidget {
                 ]),
               ),
             ]),
-            const SizedBox(height: 12),
-            Wrap(
-              spacing: 8,
-              runSpacing: 6,
-              children: profile.cropTypes
-                  .map((c) => Chip(
-                avatar: Icon(Icons.eco, size: 16, color: AppColors.forCrop(c)),
-                label: Text(t.cropLabel(c), style: const TextStyle(fontWeight: FontWeight.w800, fontSize: 12)),
-                backgroundColor: AppColors.mint,
-                side: BorderSide.none,
-              ))
-                  .toList(),
-            ),
+            if (crops.isNotEmpty) ...[
+              const SizedBox(height: 12),
+              Wrap(
+                spacing: 8,
+                runSpacing: 6,
+                children: crops
+                    .map((c) => Chip(
+                  avatar: Icon(Icons.eco, size: 16, color: AppColors.forCrop(c)),
+                  label: Text(t.cropLabel(c), style: const TextStyle(fontWeight: FontWeight.w800, fontSize: 12)),
+                  backgroundColor: AppColors.mint,
+                  side: BorderSide.none,
+                ))
+                    .toList(),
+              ),
+            ],
           ],
         ),
       ),
@@ -168,65 +183,107 @@ class _ProfileCard extends StatelessWidget {
 }
 
 class _LandCard extends StatelessWidget {
-  final FarmerProfile profile;
-  final List<FarmPlot> plots;
-  const _LandCard({required this.profile, required this.plots});
+  final double total;
+  final List<FarmPlanting> plantings;
+  final bool sqm;
+  final ValueChanged<bool> onSetUnit;
+  final VoidCallback? onOpenDss;
+  const _LandCard({
+    required this.total,
+    required this.plantings,
+    required this.sqm,
+    required this.onSetUnit,
+    required this.onOpenDss,
+  });
 
   @override
   Widget build(BuildContext context) {
     final t = AppLocalizations.of(context)!;
-    final total = profile.landSizeHectares;
+    final used = plantings.fold<double>(0, (s, e) => s + e.hectares);
+    final free = total - used;
+
     return GlassCard(
       child: Padding(
         padding: const EdgeInsets.all(18),
         child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-          Text(t.totalLandSize, style: const TextStyle(color: AppColors.muted, fontWeight: FontWeight.w700)),
+          Row(children: [
+            Expanded(child: Text(t.totalLandSize, style: const TextStyle(color: AppColors.muted, fontWeight: FontWeight.w700))),
+            SegmentedButton<bool>(
+              showSelectedIcon: false,
+              style: const ButtonStyle(visualDensity: VisualDensity.compact),
+              segments: [
+                ButtonSegment(value: false, label: Text(t.dssUnitHa)),
+                ButtonSegment(value: true, label: Text(t.dssUnitSqm)),
+              ],
+              selected: {sqm},
+              onSelectionChanged: (s) => onSetUnit(s.first),
+            ),
+          ]),
+          const SizedBox(height: 4),
           Row(crossAxisAlignment: CrossAxisAlignment.end, children: [
-            TweenAnimationBuilder<double>(
-              tween: Tween(begin: 0, end: total),
-              duration: const Duration(milliseconds: 1000),
-              curve: Curves.easeOutCubic,
-              builder: (_, v, __) => Text(v.toStringAsFixed(1),
-                  style: const TextStyle(fontSize: 52, fontWeight: FontWeight.w900, color: AppColors.leaf, height: 1.1)),
+            Flexible(
+              child: TweenAnimationBuilder<double>(
+                tween: Tween(begin: 0, end: sqm ? total * 10000 : total),
+                duration: const Duration(milliseconds: 1000),
+                curve: Curves.easeOutCubic,
+                builder: (_, v, __) => FittedBox(
+                  fit: BoxFit.scaleDown,
+                  alignment: Alignment.centerLeft,
+                  child: Text(sqm ? DssFmt.group(v.round()) : v.toStringAsFixed(2),
+                      style: const TextStyle(fontSize: 46, fontWeight: FontWeight.w900, color: AppColors.leaf, height: 1.1)),
+                ),
+              ),
             ),
             Padding(
               padding: const EdgeInsets.only(left: 6, bottom: 8),
-              child: Text(t.hectares, style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w800)),
-            ),
-            const Spacer(),
-            Padding(
-              padding: const EdgeInsets.only(bottom: 8),
-              child: Pill('${(total * 10000).toStringAsFixed(0)} ${t.sqmShort}', AppColors.soil, icon: Icons.square_foot_rounded),
+              child: Text(sqm ? 'm²' : t.hectares, style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w800)),
             ),
           ]),
-          const SizedBox(height: 14),
-          Container(
-            height: 18,
-            decoration: BoxDecoration(color: AppColors.mint, borderRadius: BorderRadius.circular(9)),
-            child: ClipRRect(
-              borderRadius: BorderRadius.circular(9),
-              child: TweenAnimationBuilder<double>(
-                tween: Tween(begin: 0, end: 1),
-                duration: const Duration(milliseconds: 1100),
-                curve: Curves.easeOutCubic,
-                builder: (_, v, child) => Align(alignment: Alignment.centerLeft, widthFactor: v, child: child),
-                child: Row(children: [
-                  for (final pl in plots)
-                    Expanded(flex: (pl.hectares * 100).round(), child: Container(color: AppColors.forCrop(pl.crop))),
-                ]),
+          if (total > 0)
+            Text(DssFmt.area(total, sqm: !sqm), style: const TextStyle(color: AppColors.muted, fontSize: 12.5)),
+          if (total <= 0) ...[
+            const SizedBox(height: 6),
+            Text(t.dssLandNotSet, style: const TextStyle(color: AppColors.muted, height: 1.35)),
+            TextButton.icon(onPressed: onOpenDss, icon: const Icon(Icons.add_rounded, size: 18), label: Text(t.dssLandSet)),
+          ],
+          if (plantings.isNotEmpty && total > 0) ...[
+            const SizedBox(height: 14),
+            Container(
+              height: 18,
+              decoration: BoxDecoration(color: AppColors.mint, borderRadius: BorderRadius.circular(9)),
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(9),
+                child: TweenAnimationBuilder<double>(
+                  tween: Tween(begin: 0, end: 1),
+                  duration: const Duration(milliseconds: 1100),
+                  curve: Curves.easeOutCubic,
+                  builder: (_, v, child) => Align(alignment: Alignment.centerLeft, widthFactor: v, child: child),
+                  child: Row(children: [
+                    for (final pl in plantings)
+                      Expanded(flex: (pl.hectares * 100000).round().clamp(1, 100000000), child: Container(color: AppColors.forCrop(pl.crop))),
+                    if (free > 0.00001) Expanded(flex: (free * 100000).round().clamp(1, 100000000), child: const SizedBox()),
+                  ]),
+                ),
               ),
             ),
-          ),
-          const SizedBox(height: 12),
-          Wrap(spacing: 14, runSpacing: 6, children: [
-            for (final pl in plots)
-              Row(mainAxisSize: MainAxisSize.min, children: [
-                Container(width: 12, height: 12, decoration: BoxDecoration(color: AppColors.forCrop(pl.crop), shape: BoxShape.circle)),
-                const SizedBox(width: 5),
-                Text('${t.cropLabel(pl.crop)} ${(pl.hectares / total * 100).round()}%',
-                    style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w700)),
-              ]),
-          ]),
+            const SizedBox(height: 12),
+            Wrap(spacing: 14, runSpacing: 6, children: [
+              for (final pl in plantings)
+                Row(mainAxisSize: MainAxisSize.min, children: [
+                  Container(width: 12, height: 12, decoration: BoxDecoration(color: AppColors.forCrop(pl.crop), shape: BoxShape.circle)),
+                  const SizedBox(width: 5),
+                  Text('${t.cropLabel(pl.crop)} ${DssFmt.percent(pl.hectares / total * 100)}% · ${DssFmt.area(pl.hectares, sqm: sqm)}',
+                      style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w700)),
+                ]),
+              if (free > 0.00001)
+                Row(mainAxisSize: MainAxisSize.min, children: [
+                  Container(width: 12, height: 12, decoration: BoxDecoration(color: AppColors.mint, shape: BoxShape.circle, border: Border.all(color: AppColors.border))),
+                  const SizedBox(width: 5),
+                  Text('${t.farmUnallocated} ${DssFmt.percent(free / total * 100)}% · ${DssFmt.area(free, sqm: sqm)}',
+                      style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w700, color: AppColors.muted)),
+                ]),
+            ]),
+          ],
         ]),
       ),
     );
@@ -264,23 +321,21 @@ class _StatTile extends StatelessWidget {
 }
 
 // ---------------------------------------------------------------------------
-// Detalyadong card ng bawat pananim
+// Detalyadong card ng bawat tanim
 // ---------------------------------------------------------------------------
 
 class _CropPlotCard extends StatelessWidget {
-  final FarmPlot plot;
+  final FarmPlanting planting;
   final PlantingGuide? guide;
   final double totalHectares;
-  final CropRecord? growingRecord;
-  final CropRecord? lastHarvest;
+  final bool sqm;
   final VoidCallback? onTap;
 
   const _CropPlotCard({
-    required this.plot,
+    required this.planting,
     required this.guide,
     required this.totalHectares,
-    required this.growingRecord,
-    required this.lastHarvest,
+    required this.sqm,
     required this.onTap,
   });
 
@@ -288,10 +343,15 @@ class _CropPlotCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final t = AppLocalizations.of(context)!;
     final locale = Localizations.localeOf(context).languageCode;
-    final color = AppColors.forCrop(plot.crop);
-    final growing = growingRecord != null;
-    final percent = totalHectares > 0 ? (plot.hectares / totalHectares * 100).round() : 0;
+    final crop = planting.crop;
+    final color = AppColors.forCrop(crop);
+    final percent = totalHectares > 0 ? DssFmt.percent(planting.hectares / totalHectares * 100) : '0';
     final g = guide;
+    final facts = factsFor(crop);
+    final est = DssService.estimate(planting);
+    final days = DateTime.now().difference(planting.plantedOn).inDays;
+    final notYet = days < 0;
+    final ready = facts != null && facts.hasHarvestDays && days >= facts.minDays!;
 
     return GlassCard(
       onTap: onTap,
@@ -312,16 +372,16 @@ class _CropPlotCard extends StatelessWidget {
             const SizedBox(width: 12),
             Expanded(
               child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-                Text(t.cropLabel(plot.crop), style: const TextStyle(fontWeight: FontWeight.w900, fontSize: 17)),
+                Text(t.cropLabel(crop), style: const TextStyle(fontWeight: FontWeight.w900, fontSize: 17)),
                 const SizedBox(height: 2),
-                Text('${plot.hectares} ${t.hectares} • ${t.farmShare(percent.toString())}',
+                Text('${DssFmt.area(planting.hectares, sqm: sqm)} • ${t.farmShare(percent)}',
                     style: const TextStyle(color: AppColors.muted, fontSize: 12.5)),
                 const SizedBox(height: 8),
                 Wrap(spacing: 6, runSpacing: 6, children: [
                   Pill(
-                    growing ? t.plotGrowing : t.plotHarvested,
-                    growing ? AppColors.fern : AppColors.soil,
-                    icon: growing ? Icons.spa_rounded : Icons.inventory_2_rounded,
+                    notYet ? t.dssNotYet : (ready ? t.farmReadySoon : t.plotGrowing),
+                    ready ? AppColors.leaf : AppColors.fern,
+                    icon: ready ? Icons.check_circle_rounded : Icons.spa_rounded,
                   ),
                   if (g != null)
                     Builder(builder: (_) {
@@ -342,10 +402,24 @@ class _CropPlotCard extends StatelessWidget {
               ),
           ]),
           const SizedBox(height: 12),
-          if (growing)
-            _GrowthSection(crop: plot.crop, record: growingRecord!, locale: locale)
-          else if (lastHarvest != null)
-            _HarvestSection(record: lastHarvest!, hectares: plot.hectares),
+          _InfoRow(icon: Icons.event_rounded, text: t.plantedOn(planting.plantedOn)),
+          if (facts != null && facts.hasHarvestDays && !notYet) ...[
+            const SizedBox(height: 8),
+            _GrowthBar(days: days, minDays: facts.minDays!, maxDays: facts.maxDays!),
+          ],
+          if (est != null) ...[
+            if (est.harvestFrom != null && est.harvestTo != null) ...[
+              const SizedBox(height: 8),
+              _InfoRow(
+                icon: Icons.agriculture_rounded,
+                text: t.farmExpectedHarvest(
+                  '${DateFormat.MMMd(locale).format(est.harvestFrom!)} - ${DateFormat.MMMd(locale).format(est.harvestTo!)}',
+                ),
+              ),
+            ],
+            const SizedBox(height: 10),
+            _EstimateBox(est: est),
+          ],
           if (g != null) ...[
             const SizedBox(height: 10),
             Container(
@@ -356,7 +430,7 @@ class _CropPlotCard extends StatelessWidget {
                 const Icon(Icons.lightbulb_rounded, size: 18, color: AppColors.soil),
                 const SizedBox(width: 8),
                 Expanded(
-                  child: Text(t.cropTip(plot.crop), style: const TextStyle(fontSize: 12.5, height: 1.35)),
+                  child: Text(t.cropTip(crop), style: const TextStyle(fontSize: 12.5, height: 1.35)),
                 ),
               ]),
             ),
@@ -367,78 +441,88 @@ class _CropPlotCard extends StatelessWidget {
   }
 }
 
-/// Para sa lumalaking pananim: araw ng paglaki, progress at inaasahang ani.
-class _GrowthSection extends StatelessWidget {
-  final String crop;
-  final CropRecord record;
-  final String locale;
-  const _GrowthSection({required this.crop, required this.record, required this.locale});
+class _GrowthBar extends StatelessWidget {
+  final int days;
+  final int minDays;
+  final int maxDays;
+  const _GrowthBar({required this.days, required this.minDays, required this.maxDays});
 
   @override
   Widget build(BuildContext context) {
     final t = AppLocalizations.of(context)!;
-    final days = DateTime.now().difference(record.datePlanted).inDays.clamp(0, 100000);
-    final range = _harvestDays[crop];
-    final mmd = DateFormat.MMMd(locale);
-
+    final value = (days / maxDays).clamp(0.0, 1.0);
     return Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-      _InfoRow(icon: Icons.event_rounded, text: t.plantedOn(record.datePlanted)),
-      if (range != null) ...[
-        const SizedBox(height: 8),
-        Row(children: [
-          Expanded(
-            child: Text(t.farmDaysGrown(days, range.$2),
-                style: const TextStyle(fontWeight: FontWeight.w800, fontSize: 13)),
-          ),
-          Text('${(days / range.$2 * 100).clamp(0, 100).round()}%',
-              style: const TextStyle(fontWeight: FontWeight.w900, color: AppColors.leaf)),
-        ]),
-        const SizedBox(height: 6),
-        ClipRRect(
-          borderRadius: BorderRadius.circular(6),
-          child: LinearProgressIndicator(
-            value: (days / range.$2).clamp(0.0, 1.0),
-            minHeight: 9,
-            backgroundColor: AppColors.mint,
-            color: days >= range.$1 ? AppColors.leaf : AppColors.fern,
-          ),
+      Row(children: [
+        Expanded(
+          child: Text(t.farmDaysGrown(days, maxDays), style: const TextStyle(fontWeight: FontWeight.w800, fontSize: 13)),
         ),
-        const SizedBox(height: 8),
-        _InfoRow(
-          icon: Icons.agriculture_rounded,
-          text: t.farmExpectedHarvest(
-            '${mmd.format(record.datePlanted.add(Duration(days: range.$1)))} - ${mmd.format(record.datePlanted.add(Duration(days: range.$2)))}',
-          ),
+        Text('${(value * 100).round()}%', style: const TextStyle(fontWeight: FontWeight.w900, color: AppColors.leaf)),
+      ]),
+      const SizedBox(height: 6),
+      ClipRRect(
+        borderRadius: BorderRadius.circular(6),
+        child: LinearProgressIndicator(
+          value: value,
+          minHeight: 9,
+          backgroundColor: AppColors.mint,
+          color: days >= minDays ? AppColors.leaf : AppColors.fern,
         ),
-        if (days >= range.$1) ...[
-          const SizedBox(height: 8),
-          Pill(t.farmReadySoon, AppColors.leaf, icon: Icons.check_circle_rounded),
-        ],
-      ],
+      ),
     ]);
   }
 }
 
-/// Para sa naaning pananim: petsa ng ani at dami ng ani.
-class _HarvestSection extends StatelessWidget {
-  final CropRecord record;
-  final double hectares;
-  const _HarvestSection({required this.record, required this.hectares});
+/// Tantiyang ani at kita ng tanim na ito (galing sa DSS).
+class _EstimateBox extends StatelessWidget {
+  final HarvestEstimate est;
+  const _EstimateBox({required this.est});
 
   @override
   Widget build(BuildContext context) {
     final t = AppLocalizations.of(context)!;
-    final nf = NumberFormat('#,###');
-    final perHa = hectares > 0 ? record.yieldKg / hectares : 0.0;
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.all(10),
+      decoration: BoxDecoration(color: AppColors.leaf.withValues(alpha: 0.08), borderRadius: BorderRadius.circular(12)),
+      child: Row(children: [
+        Expanded(
+          child: _Mini(
+            label: t.dssExpectedYield,
+            value: DssFmt.kg(est.kgMid),
+            sub: '${DssFmt.kg(est.kgLow)} - ${DssFmt.kg(est.kgHigh)}',
+          ),
+        ),
+        const SizedBox(width: 10),
+        Expanded(
+          child: est.incomeMid == null
+              ? _Mini(label: t.dssExpectedIncome, value: '-', sub: t.dssNoPrice)
+              : _Mini(
+            label: t.dssExpectedIncome,
+            value: DssFmt.peso(est.incomeMid!),
+            sub: '${DssFmt.peso(est.incomeLow!)} - ${DssFmt.peso(est.incomeHigh!)}',
+          ),
+        ),
+      ]),
+    );
+  }
+}
 
+class _Mini extends StatelessWidget {
+  final String label;
+  final String value;
+  final String sub;
+  const _Mini({required this.label, required this.value, required this.sub});
+
+  @override
+  Widget build(BuildContext context) {
     return Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-      _InfoRow(icon: Icons.event_available_rounded, text: t.harvestedOn(record.dateHarvested!)),
-      const SizedBox(height: 6),
-      _InfoRow(icon: Icons.scale_rounded, text: '${t.farmLastHarvest}: ${nf.format(record.yieldKg)} kg'),
-      if (perHa > 0) ...[
-        const SizedBox(height: 6),
-        _InfoRow(icon: Icons.stacked_bar_chart_rounded, text: t.farmYieldPerHa(nf.format(perHa))),
-      ],
+      Text(label, style: const TextStyle(fontSize: 11, color: AppColors.muted)),
+      FittedBox(
+        fit: BoxFit.scaleDown,
+        alignment: Alignment.centerLeft,
+        child: Text(value, style: const TextStyle(fontSize: 17, fontWeight: FontWeight.w900, color: AppColors.leaf)),
+      ),
+      Text(sub, style: const TextStyle(fontSize: 10.5, color: AppColors.muted), maxLines: 1, overflow: TextOverflow.ellipsis),
     ]);
   }
 }
@@ -455,45 +539,5 @@ class _InfoRow extends StatelessWidget {
       const SizedBox(width: 8),
       Expanded(child: Text(text, style: const TextStyle(fontSize: 13, height: 1.3))),
     ]);
-  }
-}
-
-// ---------------------------------------------------------------------------
-// Kasaysayan
-// ---------------------------------------------------------------------------
-
-class _CropHistoryList extends StatelessWidget {
-  final List<CropRecord> records;
-  const _CropHistoryList({required this.records});
-
-  @override
-  Widget build(BuildContext context) {
-    final t = AppLocalizations.of(context)!;
-    return GlassCard(
-      child: Padding(
-        padding: const EdgeInsets.all(16),
-        child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-          SectionTitle(icon: Icons.history_rounded, text: t.cropHistory),
-          ...records.map((r) => ListTile(
-            contentPadding: EdgeInsets.zero,
-            leading: Icon(
-              r.isHarvested ? Icons.check_circle : Icons.grass,
-              color: r.isHarvested ? AppColors.leaf : AppColors.soil,
-              size: 28,
-            ),
-            title: Text(t.cropLabel(r.crop), style: const TextStyle(fontWeight: FontWeight.w800)),
-            subtitle: Text(
-              '${t.plantedOn(r.datePlanted)}\n'
-                  '${r.isHarvested ? t.harvestedOn(r.dateHarvested!) : t.stillGrowing}',
-            ),
-            isThreeLine: true,
-            trailing: Text(
-              r.isHarvested ? '${NumberFormat('#,###').format(r.yieldKg)} kg' : '-',
-              style: const TextStyle(fontWeight: FontWeight.w900),
-            ),
-          )),
-        ]),
-      ),
-    );
   }
 }

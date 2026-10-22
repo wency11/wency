@@ -706,12 +706,6 @@ class AppLocalizationsEn extends AppLocalizations {
   String get weatherThunderstorm => 'Thunderstorm';
 
   @override
-  String get weatherLightRain => 'Light rain';
-
-  @override
-  String get weatherHeavyRain => 'Heavy rain';
-
-  @override
   String get adviceThunderTitle => 'Thunderstorm risk';
 
   @override
@@ -887,4 +881,458 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get errorLoad =>
       'Could not load data. Check your internet connection and try again.';
+
+  @override
+  String get navDss => 'DSS';
+
+  @override
+  String get dssMyTitle => 'Farm Decision Support';
+
+  @override
+  String get dssMySubtitle =>
+      'Enter your crop and get advice made for your farm';
+
+  @override
+  String get dssMyDisclaimer =>
+      'These numbers are estimates and a guide only, not official data or a guaranteed forecast. Confirm with your Municipal Agriculture Office before making big decisions.';
+
+  @override
+  String get dssMonthsShort =>
+      'Jan,Feb,Mar,Apr,May,Jun,Jul,Aug,Sep,Oct,Nov,Dec';
+
+  @override
+  String get dssEmptyTitle => 'Add your first crop';
+
+  @override
+  String get dssEmptyBody =>
+      'Enter the crop, land size and planting date. The planting advice, expected harvest, income and selling time will appear here.';
+
+  @override
+  String get dssAddPlanting => 'Add crop';
+
+  @override
+  String get dssEditPlanting => 'Edit crop';
+
+  @override
+  String get dssAdd => 'Add';
+
+  @override
+  String get dssDelete => 'Delete';
+
+  @override
+  String get dssDeleteTitle => 'Delete this crop?';
+
+  @override
+  String dssDeleteBody(String crop) {
+    return '$crop will be removed from your list.';
+  }
+
+  @override
+  String get dssMyPlantings => 'My crops';
+
+  @override
+  String get dssCrop => 'Crop';
+
+  @override
+  String get dssLandSize => 'Land size';
+
+  @override
+  String get dssLandSizeHint => 'In hectares. 1,000 sq m = 0.1 ha';
+
+  @override
+  String get dssAreaInvalid => 'Enter a number greater than 0';
+
+  @override
+  String get dssPlantedOn => 'Date planted';
+
+  @override
+  String get dssLastYield => 'Last harvest (optional)';
+
+  @override
+  String get dssLastYieldHint =>
+      'Total kg from your last harvest on this land. Makes the estimate closer to your farm.';
+
+  @override
+  String get dssDaysGrown => 'Days since planting';
+
+  @override
+  String dssDaysCount(int n) {
+    return '$n days';
+  }
+
+  @override
+  String get dssNotYet => 'Not yet planted';
+
+  @override
+  String get dssExpectedHarvest => 'Expected harvest';
+
+  @override
+  String get dssHarvestYearRound => 'Harvested through the year';
+
+  @override
+  String get dssPlantingAdvisory => 'Planting advice';
+
+  @override
+  String get dssPlantingAdvisorySub => 'Which months are best for this crop';
+
+  @override
+  String dssFitBest(String crop) {
+    return 'Now is a good time to plant $crop';
+  }
+
+  @override
+  String dssFitPossible(String crop) {
+    return 'You can plant $crop now, but it is not the best time';
+  }
+
+  @override
+  String dssFitAvoid(String crop) {
+    return 'Not a good time to plant $crop now';
+  }
+
+  @override
+  String get dssLegendBest => 'Best';
+
+  @override
+  String get dssLegendPossible => 'Possible';
+
+  @override
+  String get dssLegendAvoid => 'Avoid';
+
+  @override
+  String get dssNextBest => 'Next best months';
+
+  @override
+  String get dssWeatherBasis => 'Based on';
+
+  @override
+  String get dssWeatherBasisBody =>
+      'the usual rainy and dry seasons in Laguna. Check the weather forecast before planting.';
+
+  @override
+  String get dssHarvestIncome => 'Harvest and income';
+
+  @override
+  String get dssHarvestIncomeSub => 'Estimate with a range';
+
+  @override
+  String get dssExpectedYield => 'Expected harvest';
+
+  @override
+  String get dssYieldPerYear => 'Harvest per year';
+
+  @override
+  String get dssExpectedIncome => 'Expected income';
+
+  @override
+  String get dssNoPrice => 'No sample price for this crop';
+
+  @override
+  String get dssNoEstimate => 'No estimate available for this crop yet.';
+
+  @override
+  String get dssLow => 'Low';
+
+  @override
+  String get dssLikely => 'Likely';
+
+  @override
+  String get dssHigh => 'High';
+
+  @override
+  String get dssHowComputed => 'How it is computed';
+
+  @override
+  String dssBasisOwn(String ha) {
+    return 'Your last harvest per hectare, for $ha (±15%).';
+  }
+
+  @override
+  String dssBasisTypical(String ha, String kgHa) {
+    return 'Typical harvest of about $kgHa kg per hectare, for $ha.';
+  }
+
+  @override
+  String get dssPriceUsed => 'Price used';
+
+  @override
+  String get dssPriceAdvisory => 'Price advice';
+
+  @override
+  String get dssPriceAdvisorySub => 'Which months prices are usually high';
+
+  @override
+  String dssSellBest(String months) {
+    return 'Prices are expected to be higher in $months';
+  }
+
+  @override
+  String get dssLegendHighPrice => 'Higher price';
+
+  @override
+  String get dssLegendLowPrice => 'Lower price';
+
+  @override
+  String get dssYourHarvest => 'Your harvest';
+
+  @override
+  String dssHarvestHighPrice(String month) {
+    return 'You will likely harvest around $month, when prices are usually good.';
+  }
+
+  @override
+  String dssHarvestLowPrice(String month) {
+    return 'You will likely harvest around $month, when many farmers harvest and prices tend to be lower.';
+  }
+
+  @override
+  String dssTipStorable(String months) {
+    return 'This crop keeps well. If you can store it safely, consider selling in $months.';
+  }
+
+  @override
+  String get dssTipFresh =>
+      'This crop spoils quickly, so sell soon after harvest. Ask buyers for the best price and sell directly if you can.';
+
+  @override
+  String get dssPriceRangeYear => 'Price range through the year';
+
+  @override
+  String dssPriceFlat(String crop) {
+    return 'There is no clear monthly price pattern for $crop in our guide.';
+  }
+
+  @override
+  String get dssFarmMap => 'My farm map';
+
+  @override
+  String get dssFarmMapSub => 'Farm location and weather there now';
+
+  @override
+  String get dssMapHint => 'Tap the map to move the pin to your farm.';
+
+  @override
+  String get dssResetLocation => 'Back to Pagsanjan center';
+
+  @override
+  String get dssWeatherHere => 'Weather at your farm now';
+
+  @override
+  String get dssWeatherFailed => 'Could not load the weather here.';
+
+  @override
+  String get dssFeelsLike => 'Feels like';
+
+  @override
+  String get dssSummaryTitle => 'DSS';
+
+  @override
+  String get dssSummaryEmpty =>
+      'Add your crop in the DSS tab to get advice for your farm';
+
+  @override
+  String dssSummaryLine(String kg, String low, String high) {
+    return 'Expected harvest about $kg, income $low to $high.';
+  }
+
+  @override
+  String dssSummaryLineNoPrice(String kg) {
+    return 'Expected harvest about $kg.';
+  }
+
+  @override
+  String get weatherLightRain => 'Light rain';
+
+  @override
+  String get weatherHeavyRain => 'Heavy rain';
+
+  @override
+  String get heatBestWork => 'Best time for field work';
+
+  @override
+  String get heatNoSafe => 'Avoid long field work today';
+
+  @override
+  String get priceNoMyCrops =>
+      'Add your crop in the DSS tab to see its expected price here.';
+
+  @override
+  String cropAdvHarvestReadyTitle(String crop) {
+    return '$crop: check for harvest';
+  }
+
+  @override
+  String cropAdvHarvestReadyMsg(String crop) {
+    return 'Your $crop has reached the usual harvest age. Check the crop and plan your harvest and buyers.';
+  }
+
+  @override
+  String cropAdvHarvestSoonTitle(String crop) {
+    return '$crop: harvest is near';
+  }
+
+  @override
+  String cropAdvHarvestSoonMsg(String crop, int days) {
+    return 'Your $crop may be ready in about $days days. Prepare containers, workers and buyers.';
+  }
+
+  @override
+  String cropAdvDrainageTitle(String crop) {
+    return '$crop: check drainage';
+  }
+
+  @override
+  String cropAdvDrainageMsg(String crop) {
+    return 'Heavy rain is expected in the next 3 days. Clear the canals so water does not pool around your $crop.';
+  }
+
+  @override
+  String cropAdvHeatTitle(String crop) {
+    return '$crop: protect from heat';
+  }
+
+  @override
+  String cropAdvHeatMsg(String crop) {
+    return 'It is very hot today. Water your $crop early morning or late afternoon, not at midday.';
+  }
+
+  @override
+  String cropAdvWindTitle(String crop) {
+    return '$crop: secure your plants';
+  }
+
+  @override
+  String cropAdvWindMsg(String crop) {
+    return 'Strong wind today. Support or tie your $crop so the plants do not fall.';
+  }
+
+  @override
+  String cropAdvDryTitle(String crop) {
+    return '$crop: good drying days';
+  }
+
+  @override
+  String cropAdvDryMsg(String crop) {
+    return 'Dry days ahead. Good for harvesting and drying your $crop, and for spraying and fertilizing.';
+  }
+
+  @override
+  String get notifStormTitle => 'Thunderstorm now';
+
+  @override
+  String get notifStormMsg =>
+      'Stay out of open fields and keep tools and animals under shelter.';
+
+  @override
+  String get notifRainTitle => 'Heavy rain expected';
+
+  @override
+  String notifRainMsg(int mm) {
+    return 'About $mm mm of rain in the next 3 days. Clear your canals so water does not pool in the field.';
+  }
+
+  @override
+  String get notifHeatTitle => 'Dangerous heat today';
+
+  @override
+  String notifHeatMsg(int hi) {
+    return 'Heat index up to $hi°C. Avoid field work at midday, rest in the shade and drink water.';
+  }
+
+  @override
+  String notifHarvestReadyTitle(String crop) {
+    return '$crop: check for harvest';
+  }
+
+  @override
+  String notifHarvestReadyMsg(String crop) {
+    return 'Your $crop has reached the usual harvest age. Check the crop and plan your harvest.';
+  }
+
+  @override
+  String notifHarvestSoonTitle(String crop) {
+    return '$crop: harvest is near';
+  }
+
+  @override
+  String notifHarvestSoonMsg(String crop, int days) {
+    return 'Your $crop may be ready in about $days days.';
+  }
+
+  @override
+  String notifMarketUpTitle(String crop) {
+    return '$crop price may go up';
+  }
+
+  @override
+  String notifMarketUpMsg(String crop, int percent) {
+    return 'The price of $crop may rise about $percent% in the next 7 days. This is an estimate from the weather forecast.';
+  }
+
+  @override
+  String notifMarketDownTitle(String crop) {
+    return '$crop price may go down';
+  }
+
+  @override
+  String notifMarketDownMsg(String crop, int percent) {
+    return 'The price of $crop may fall about $percent% in the next 7 days. This is an estimate from the weather forecast.';
+  }
+
+  @override
+  String notifPlantingNowTitle(String crop) {
+    return 'Good time to plant $crop';
+  }
+
+  @override
+  String notifPlantingNowMsg(String crop) {
+    return 'This month is one of the best months to plant $crop in Pagsanjan, Laguna.';
+  }
+
+  @override
+  String get dssUnitHa => 'Hectares (ha)';
+
+  @override
+  String get dssUnitSqm => 'Square meters (m²)';
+
+  @override
+  String get dssUnitNote =>
+      '1 hectare = 10,000 m². You can switch between the two anytime.';
+
+  @override
+  String get dssTotalLand => 'Total land size';
+
+  @override
+  String get dssTotalLandSub =>
+      'Enter the whole size of your farm. You will divide it among your crops in \"Add crop\".';
+
+  @override
+  String dssTotalTooSmall(String area) {
+    return 'Too small. Your crops already use $area.';
+  }
+
+  @override
+  String dssExceeds(String area) {
+    return 'Too much. Only $area of your land is left.';
+  }
+
+  @override
+  String dssRemaining(String area) {
+    return 'Remaining: $area';
+  }
+
+  @override
+  String dssLandUsed(String area) {
+    return 'Planted: $area';
+  }
+
+  @override
+  String get dssLandSet => 'Set land size';
+
+  @override
+  String get dssLandNotSet =>
+      'Enter your total land size so the app can show how much each crop uses.';
+
+  @override
+  String get farmUnallocated => 'Not planted';
 }

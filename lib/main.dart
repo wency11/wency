@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 
 import 'dashboard_data.dart';
 import 'l10n/app_localizations.dart';
+import 'providers/farm_input_provider.dart';
 import 'screens/dashboard/dashboard_screen.dart';
 
 class AppConstants {
@@ -18,41 +18,36 @@ class AppConstants {
   static const String logoAsset = 'assets/images/pagri_logo.png';
 }
 
-/// Magaan na berde (light green) na tema ng PAGRI - malambot na "glass" na itsura.
+/// Magaan at malambot na berdeng tema ng PAGRI (light, frosted-glass).
 /// Ang mga lumang pangalan (leaf, fern, mint, paddy, ink...) ay pinanatili para
 /// hindi masira ang ibang screen - ang mga kulay lang ang nagbago.
 class AppColors {
-  // Background (gradient mula taas pababa)
-  static const bg1 = Color(0xFFF1F9EE); // taas: napakaputlang berde
-  static const bg0 = Color(0xFFD3E9C9); // baba: malambot na berde
-
-  // Mga card
-  static const surface = Color(0xFFF9FCF7); // dialog / sheet (hindi transparent)
-  static const surfaceHi = Color(0xFFFFFFFF);
-  static const glass = Color(0xB3FFFFFF); // card (70% puti)
-  static const glassHi = Color(0xE6FFFFFF); // card (90% puti)
-  static const glassBorder = Color(0xCCFFFFFF);
-  static const navBg = Color(0xE6FFFFFF); // bottom navigation
-  static const border = Color(0xFFCFE3C8); // manipis na guhit / divider
+  // Background at mga card
+  static const bg0 = Color(0xFFD3E9CC); // ibaba ng background (mas matingkad na sage)
+  static const bg1 = Color(0xFFF1F9EC); // taas ng background (halos puti)
+  static const surface = Color(0xFFF8FCF5); // dialog, sheet, nav
+  static const surfaceHi = Color(0xFFFFFFFF); // maliwanag na dulo ng card
+  static const navBg = Color(0xFFF8FCF5); // bottom navigation
+  static const border = Color(0xFFD3E6CE); // manipis na guhit ng card
 
   // Accent
-  static const leaf = Color(0xFF2E7D32); // malalim na berde - icon at highlight
-  static const accentDark = Color(0xFF388E3C); // pindutan na may puting teksto
-  static const fern = Color(0xFF4CAF50); // pangalawang berde
-  static const lime = Color(0xFF8BC34A); // logo light green
+  static const leaf = Color(0xFF2E7D32); // pangunahing berde - mga icon at highlight
+  static const accentDark = Color(0xFF2E7D32); // pindutan na may puting teksto
+  static const fern = Color(0xFF43A047); // pangalawang berde
+  static const lime = Color(0xFF7CB342); // light green (logo)
 
   // Mga lumang pangalan
-  static const mint = Color(0xFFE3F2DF); // panloob na kahon / tint
-  static const paddy = Color(0xFFF1F9EE); // background
+  static const mint = Color(0xFFE3F1DF); // panloob na kahon / tint
+  static const paddy = Color(0xFFEFF7EB); // background
   static const soil = Color(0xFF8D6E63); // accent (kayumanggi)
-  static const ink = Color(0xFF1B3A22); // pangunahing teksto (madilim na berde)
-  static const muted = Color(0xFF5F7A66); // pangalawang teksto
-  static const sun = Color(0xFFFFB300);
+  static const ink = Color(0xFF17391F); // pangunahing teksto (madilim na berde)
+  static const muted = Color(0xFF5E7C64); // pangalawang teksto
+  static const sun = Color(0xFFF9A825);
   static const rain = Color(0xFF1E88E5);
 
   // Pagtaas / pagbaba
   static const up = Color(0xFF2E7D32);
-  static const down = Color(0xFFD32F2F);
+  static const down = Color(0xFFC62828);
 
   static Color forCrop(String crop) {
     switch (crop) {
@@ -73,20 +68,20 @@ class AppColors {
         return const Color(0xFFE6A700);
       case 'Coconut':
       case 'Niyog':
-        return const Color(0xFF8D6E63);
+        return const Color(0xFF8D6E4A);
       case 'Ampalaya':
-        return const Color(0xFF43A047);
+        return const Color(0xFF4CAF50);
       case 'Squash':
       case 'Kalabasa':
-        return const Color(0xFFEF8F00);
+        return const Color(0xFFEF8F1E);
       case 'Sweet potato':
       case 'Kamote':
-        return const Color(0xFFB8567F);
+        return const Color(0xFFB5568A);
       case 'Taro':
       case 'Gabi':
-        return const Color(0xFF6A5FB5);
+        return const Color(0xFF7E6BC4);
       case 'Calamansi':
-        return const Color(0xFF8FA800);
+        return const Color(0xFF9CB820);
       default:
         return fern;
     }
@@ -96,7 +91,7 @@ class AppColors {
 class AppTheme {
   static ThemeData get light {
     final scheme = ColorScheme.fromSeed(
-      seedColor: AppColors.accentDark,
+      seedColor: AppColors.leaf,
       brightness: Brightness.light,
     ).copyWith(
       primary: AppColors.leaf,
@@ -110,7 +105,7 @@ class AppTheme {
     final base = ThemeData(useMaterial3: true, brightness: Brightness.light, colorScheme: scheme);
 
     return base.copyWith(
-      scaffoldBackgroundColor: AppColors.bg0,
+      scaffoldBackgroundColor: AppColors.bg1,
       canvasColor: AppColors.surface,
       textTheme: GoogleFonts.nunitoTextTheme(base.textTheme)
           .apply(bodyColor: AppColors.ink, displayColor: AppColors.ink),
@@ -121,7 +116,6 @@ class AppTheme {
         elevation: 0,
         scrolledUnderElevation: 0,
         centerTitle: false,
-        systemOverlayStyle: SystemUiOverlayStyle.dark,
       ),
       navigationBarTheme: NavigationBarThemeData(
         backgroundColor: AppColors.navBg,
@@ -139,12 +133,12 @@ class AppTheme {
         )),
       ),
       cardTheme: CardThemeData(
-        color: AppColors.surface,
+        color: const Color(0xCCFFFFFF),
         elevation: 0,
         margin: EdgeInsets.zero,
         surfaceTintColor: Colors.transparent,
         shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(20),
+          borderRadius: BorderRadius.circular(22),
           side: const BorderSide(color: AppColors.border),
         ),
       ),
@@ -203,7 +197,7 @@ class AppTheme {
       ),
       inputDecorationTheme: InputDecorationTheme(
         filled: true,
-        fillColor: AppColors.mint,
+        fillColor: Colors.white,
         labelStyle: const TextStyle(color: AppColors.muted),
         hintStyle: const TextStyle(color: AppColors.muted),
         prefixIconColor: AppColors.leaf,
@@ -257,8 +251,11 @@ class PagriApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ChangeNotifierProvider(
-      create: (_) => DashboardProvider()..start(),
+    return MultiProvider(
+      providers: [
+        ChangeNotifierProvider(create: (_) => DashboardProvider()..start()),
+        ChangeNotifierProvider(create: (_) => FarmInputProvider()..load()),
+      ],
       child: Consumer<DashboardProvider>(
         builder: (_, p, __) => MaterialApp(
           title: 'PAGRI - Pagsanjan Agriculture',

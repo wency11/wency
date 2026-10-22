@@ -2,44 +2,33 @@ import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:provider/provider.dart';
 
-import '../../../core/crop_l10n.dart';
 import '../../../core/heat_index.dart';
 import '../../../core/l10n_data.dart';
+import '../../../core/crop_l10n.dart';
 import '../../../dashboard_data.dart';
 import '../../../l10n/app_localizations.dart';
 import '../../../main.dart';
+import '../../../models/crop_advice.dart';
+import '../../../providers/farm_input_provider.dart';
+import '../../../services/crop_advice_service.dart';
 import '../../../widgets/common_widgets.dart';
-import '../../../widgets/crop_image.dart';
+import '../../../widgets/dss_common.dart';
+import '../../../widgets/dss_summary_card.dart';
+import '../../../widgets/heat_graph.dart';
 import '../../../widgets/weather_icon.dart';
-import '../crop_detail_screen.dart';
 
-class HomeTab extends StatelessWidget {
+class WeatherTab extends StatelessWidget {
   final DashboardProvider p;
-  const HomeTab({super.key, required this.p});
+  final VoidCallback? onOpenDss;
+  const WeatherTab({super.key, required this.p, this.onOpenDss});
 
   String _greeting(AppLocalizations t) {
     final h = DateTime.now().hour;
     if (h < 12) return t.greetingMorning;
     if (h < 18) return t.greetingAfternoon;
     return t.greetingEvening;
-  }
-
-  void _openCrop(BuildContext context, PlantingGuide g) {
-    Navigator.of(context).push(
-      PageRouteBuilder(
-        transitionDuration: const Duration(milliseconds: 320),
-        pageBuilder: (_, __, ___) => CropDetailScreen(guide: g, p: p),
-        transitionsBuilder: (_, anim, __, child) => FadeTransition(
-          opacity: CurvedAnimation(parent: anim, curve: Curves.easeOut),
-          child: SlideTransition(
-            position: Tween(begin: const Offset(0, 0.04), end: Offset.zero)
-                .animate(CurvedAnimation(parent: anim, curve: Curves.easeOutCubic)),
-            child: child,
-          ),
-        ),
-      ),
-    );
   }
 
   @override
@@ -62,7 +51,9 @@ class HomeTab extends StatelessWidget {
         e.time.hour <= 19)
         .toList();
 
-    final activeCrops = p.history.where((r) => !r.isHarvested).length;
+    final farm = context.watch<FarmInputProvider>();
+    final activeCrops = farm.plantings.length;
+    final cropAdvice = CropAdviceService().build(farm.plantings, w);
     final plantNow = p.guides.where((g) => g.statusFor(DateTime.now().month) == PlantStatus.best).length;
 
     return AnimatedTabList(items: [
@@ -77,6 +68,10 @@ class HomeTab extends StatelessWidget {
       _WeatherCard(w: w, updated: p.lastUpdated, stale: p.weatherStale, place: profile.barangay),
       const SizedBox(height: 20),
 
+      // DSS ng bukid (galing sa inilagay ng magsasaka)
+      DssSummaryCard(onOpenDss: onOpenDss),
+      const SizedBox(height: 20),
+
       // Buod ng bukid
       SectionTitle(icon: Icons.dashboard_rounded, text: t.farmOverview),
       Row(children: [
@@ -85,12 +80,12 @@ class HomeTab extends StatelessWidget {
             label: t.totalLandSize,
             icon: Icons.landscape_rounded,
             value: CountUp(
-              value: profile.landSizeHectares,
-              decimals: 1,
+              value: farm.useSqm ? farm.landTotal * 10000 : farm.landTotal,
+              decimals: farm.useSqm ? 0 : 2,
               style: const TextStyle(fontSize: 26, fontWeight: FontWeight.w900),
-              suffix: ' ha',
+              suffix: farm.useSqm ? ' m²' : ' ha',
             ),
-            sub: '${(profile.landSizeHectares * 10000).toStringAsFixed(0)} ${t.sqmShort}',
+            sub: DssFmt.area(farm.landTotal, sqm: !farm.useSqm),
             subColor: AppColors.leaf,
           ),
         ),
@@ -133,26 +128,17 @@ class HomeTab extends StatelessWidget {
         ),
       ]),
       const SizedBox(height: 12),
-      _HeatIndexCard(heat: heat, todayHours: todayHours),
+      _HeatIndexCard(heat: heat, todayHours: todayHours, now: now),
       const SizedBox(height: 12),
       _ForecastCard(hours: w.hourly, days: w.daily),
       const SizedBox(height: 20),
 
       // Payo
       SectionTitle(icon: Icons.tips_and_updates_rounded, text: t.adviceTitle, subtitle: t.adviceSubtitle),
+      ...cropAdvice.map((a) => Padding(padding: const EdgeInsets.only(bottom: 10), child: _CropAdviceCard(a: a))),
       ...p.advice.map((a) => Padding(padding: const EdgeInsets.only(bottom: 10), child: _AdviceCard(a: a))),
       const SizedBox(height: 10),
 
-      // Mga pananim (pindutin para sa DSS graph)
-      SectionTitle(icon: Icons.eco_rounded, text: t.homeCropsTitle, subtitle: t.homeCropsSub),
-      ...p.guides.map((g) => Padding(
-        padding: const EdgeInsets.only(bottom: 10),
-        child: _CropCard(guide: g, onTap: () => _openCrop(context, g)),
-      )),
-      Padding(
-        padding: const EdgeInsets.symmetric(vertical: 4),
-        child: Text(t.homeCropsNote, style: const TextStyle(fontSize: 12, color: AppColors.muted)),
-      ),
       const SizedBox(height: 24),
     ]);
   }
@@ -223,7 +209,7 @@ class _WeatherCard extends StatelessWidget {
     final updatedLine = updated != null ? '\n${t.updatedAt(updated!)}' : '';
 
     return GlassCard(
-      tint: info.gradient.last.withValues(alpha: 0.26),
+      tint: Color.lerp(Colors.white, info.gradient.first, 0.22),
       padding: const EdgeInsets.fromLTRB(16, 14, 16, 14),
       child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
         Row(children: [
@@ -240,7 +226,9 @@ class _WeatherCard extends StatelessWidget {
         ]),
         const SizedBox(height: 10),
         Row(crossAxisAlignment: CrossAxisAlignment.center, children: [
-          WeatherIcon(glyph: glyph, size: 78, animated: true),
+          _Floating(
+            child: WeatherIcon(glyph: glyph, size: 72, animated: true),
+          ),
           const SizedBox(width: 12),
           Expanded(
             flex: 5,
@@ -341,7 +329,8 @@ class _OverviewTile extends StatelessWidget {
 class _HeatIndexCard extends StatelessWidget {
   final HeatIndex heat;
   final List<HourlyWeather> todayHours;
-  const _HeatIndexCard({required this.heat, required this.todayHours});
+  final DateTime now;
+  const _HeatIndexCard({required this.heat, required this.todayHours, required this.now});
 
   @override
   Widget build(BuildContext context) {
@@ -375,87 +364,16 @@ class _HeatIndexCard extends StatelessWidget {
         ]),
         const SizedBox(height: 12),
         _HeatScale(value: heat.celsius),
-        if (todayHours.isNotEmpty) ...[
+        if (todayHours.length >= 2) ...[
           const SizedBox(height: 14),
           const Divider(height: 1),
           const SizedBox(height: 12),
-          _HeatTimeline(hours: todayHours),
+          HeatGraph(hours: todayHours, now: now),
         ],
         const SizedBox(height: 8),
         Text(t.heatScaleSource, style: const TextStyle(fontSize: 10.5, color: AppColors.muted, height: 1.3)),
       ]),
     );
-  }
-}
-
-/// Heat index kada oras ngayong araw (5 AM - 7 PM). Pinakamainit na oras ay may marka.
-class _HeatTimeline extends StatelessWidget {
-  final List<HourlyWeather> hours;
-  const _HeatTimeline({required this.hours});
-
-  static const _minC = 24.0;
-  static const _maxC = 52.0;
-
-  @override
-  Widget build(BuildContext context) {
-    final t = AppLocalizations.of(context)!;
-    final locale = Localizations.localeOf(context).languageCode;
-
-    var peak = hours.first;
-    for (final h in hours) {
-      if (h.heat.celsius > peak.heat.celsius) peak = h;
-    }
-    final peakColor = heatColor(peak.heat.level);
-    String fmt(DateTime d) => DateFormat('h a', locale).format(d);
-
-    return Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-      Text(t.heatTimeline, style: const TextStyle(fontWeight: FontWeight.w800, fontSize: 13)),
-      const SizedBox(height: 6),
-      Row(children: [
-        Icon(Icons.local_fire_department_rounded, size: 16, color: peakColor),
-        const SizedBox(width: 4),
-        Expanded(
-          child: Text(
-            '${t.heatHottest}: ${fmt(peak.time)} • ${peak.heat.celsius.round()}°C',
-            style: TextStyle(fontSize: 12.5, fontWeight: FontWeight.w800, color: peakColor),
-          ),
-        ),
-      ]),
-      const SizedBox(height: 8),
-      SizedBox(
-        height: 64,
-        child: Row(crossAxisAlignment: CrossAxisAlignment.end, children: [
-          for (final h in hours)
-            Expanded(
-              child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 1.5),
-                child: Align(
-                  alignment: Alignment.bottomCenter,
-                  child: TweenAnimationBuilder<double>(
-                    tween: Tween(begin: 0, end: 10 + ((h.heat.celsius - _minC).clamp(0.0, _maxC - _minC) / (_maxC - _minC)) * 50),
-                    duration: const Duration(milliseconds: 700),
-                    curve: Curves.easeOutCubic,
-                    builder: (_, v, __) => Container(
-                      height: v,
-                      decoration: BoxDecoration(
-                        color: heatColor(h.heat.level),
-                        borderRadius: BorderRadius.circular(4),
-                        border: identical(h, peak) ? Border.all(color: AppColors.ink, width: 1.6) : null,
-                      ),
-                    ),
-                  ),
-                ),
-              ),
-            ),
-        ]),
-      ),
-      const SizedBox(height: 4),
-      Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
-        Text(fmt(hours.first.time), style: const TextStyle(fontSize: 10, color: AppColors.muted)),
-        Text(fmt(hours[hours.length ~/ 2].time), style: const TextStyle(fontSize: 10, color: AppColors.muted)),
-        Text(fmt(hours.last.time), style: const TextStyle(fontSize: 10, color: AppColors.muted)),
-      ]),
-    ]);
   }
 }
 
@@ -623,7 +541,6 @@ class _HourItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final glyph = glyphFor(hour.code, isDay: hour.isDay);
     return Container(
       width: 64,
       padding: const EdgeInsets.symmetric(vertical: 8),
@@ -635,7 +552,7 @@ class _HourItem extends StatelessWidget {
       child: Column(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
         Text(isFirst ? nowLabel : DateFormat('h a', locale).format(hour.time),
             style: TextStyle(fontWeight: FontWeight.w700, fontSize: 11, color: isFirst ? Colors.white : AppColors.muted)),
-        WeatherIcon(glyph: glyph, size: 34),
+        WeatherIcon(glyph: glyphFor(hour.code, isDay: hour.isDay), size: 30),
         Text('${hour.temp.round()}°', style: const TextStyle(fontWeight: FontWeight.w900, fontSize: 14)),
         Row(mainAxisSize: MainAxisSize.min, children: [
           Icon(Icons.water_drop, size: 10, color: isFirst ? Colors.white70 : AppColors.rain),
@@ -657,7 +574,6 @@ class _DayItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final glyph = glyphFor(day.code);
     return Container(
       width: 72,
       padding: const EdgeInsets.symmetric(vertical: 8),
@@ -669,7 +585,7 @@ class _DayItem extends StatelessWidget {
       child: Column(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
         Text(isToday ? todayLabel : DateFormat('EEE d', locale).format(day.date),
             style: TextStyle(fontWeight: FontWeight.w800, fontSize: 11, color: isToday ? Colors.white : AppColors.muted)),
-        WeatherIcon(glyph: glyph, size: 34),
+        WeatherIcon(glyph: glyphFor(day.code), size: 30),
         Column(mainAxisSize: MainAxisSize.min, children: [
           Text('${day.tempMax.round()}°', style: const TextStyle(fontWeight: FontWeight.w900, fontSize: 14)),
           Text('${day.tempMin.round()}°', style: TextStyle(fontSize: 11, color: isToday ? Colors.white70 : AppColors.muted)),
@@ -713,50 +629,25 @@ class _AdviceCard extends StatelessWidget {
   }
 }
 
-// ---------------------------------------------------------------------------
-// Mga pananim
-// ---------------------------------------------------------------------------
-
-class _CropCard extends StatelessWidget {
-  final PlantingGuide guide;
-  final VoidCallback onTap;
-  const _CropCard({required this.guide, required this.onTap});
+class _CropAdviceCard extends StatelessWidget {
+  final CropAdvice a;
+  const _CropAdviceCard({required this.a});
 
   @override
   Widget build(BuildContext context) {
     final t = AppLocalizations.of(context)!;
-    final locale = Localizations.localeOf(context).languageCode;
-    final status = guide.statusFor(DateTime.now().month);
-
+    final name = t.cropLabel(a.crop);
     return GlassCard(
-      onTap: onTap,
-      padding: const EdgeInsets.all(10),
+      padding: const EdgeInsets.all(14),
       child: Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
-        ClipRRect(
-          borderRadius: BorderRadius.circular(16),
-          child: SizedBox(width: 92, height: 92, child: CropImage(guide: guide)),
-        ),
+        IconBubble(icon: a.icon, color: a.color, size: 46),
         const SizedBox(width: 12),
         Expanded(
           child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-            Text(t.cropLabel(guide.crop), style: const TextStyle(fontWeight: FontWeight.w900, fontSize: 17)),
+            Text(t.cropAdviceTitle(a, name), style: const TextStyle(fontWeight: FontWeight.w900, fontSize: 15)),
             const SizedBox(height: 2),
-            Text(
-              t.cropAbout(guide.crop),
-              maxLines: 2,
-              overflow: TextOverflow.ellipsis,
-              style: const TextStyle(fontSize: 12.5, color: AppColors.muted, height: 1.3),
-            ),
-            const SizedBox(height: 8),
-            Wrap(spacing: 6, runSpacing: 6, children: [
-              Pill(t.plantStatusLabel(status), plantStatusColor(status), icon: plantStatusIcon(status)),
-              Pill(monthRangesLabel(guide, locale), AppColors.soil, icon: Icons.calendar_month_rounded),
-            ]),
+            Text(t.cropAdviceMessage(a, name), style: const TextStyle(height: 1.35, color: AppColors.muted)),
           ]),
-        ),
-        const Padding(
-          padding: EdgeInsets.only(top: 4),
-          child: Icon(Icons.chevron_right_rounded, color: AppColors.muted),
         ),
       ]),
     );
@@ -766,6 +657,33 @@ class _CropCard extends StatelessWidget {
 // ---------------------------------------------------------------------------
 // Animations
 // ---------------------------------------------------------------------------
+
+class _Floating extends StatefulWidget {
+  final Widget child;
+  const _Floating({required this.child});
+
+  @override
+  State<_Floating> createState() => _FloatingState();
+}
+
+class _FloatingState extends State<_Floating> with SingleTickerProviderStateMixin {
+  late final AnimationController _c = AnimationController(vsync: this, duration: const Duration(seconds: 3))..repeat();
+
+  @override
+  void dispose() {
+    _c.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return AnimatedBuilder(
+      animation: _c,
+      builder: (_, child) => Transform.translate(offset: Offset(0, math.sin(_c.value * 2 * math.pi) * 4), child: child),
+      child: widget.child,
+    );
+  }
+}
 
 class _LiveDot extends StatefulWidget {
   final Color color;

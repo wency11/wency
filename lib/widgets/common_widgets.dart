@@ -92,7 +92,7 @@ class _PressableScaleState extends State<PressableScale> {
   }
 }
 
-/// Malambot na "glass" card: translucent na puti, manipis na guhit at banayad na lilim.
+/// Malambot na puting "salamin" na card na may manipis na guhit at banayad na anino.
 class GlassCard extends StatelessWidget {
   final Widget child;
   final EdgeInsetsGeometry padding;
@@ -106,7 +106,7 @@ class GlassCard extends StatelessWidget {
     this.padding = EdgeInsets.zero,
     this.onTap,
     this.tint,
-    this.radius = 22,
+    this.radius = 20,
   });
 
   @override
@@ -118,12 +118,15 @@ class GlassCard extends StatelessWidget {
         gradient: LinearGradient(
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
-          colors: [tint ?? AppColors.glassHi, AppColors.glass],
+          colors: [
+            (tint ?? Colors.white).withValues(alpha: 0.88),
+            Colors.white.withValues(alpha: 0.64),
+          ],
         ),
         borderRadius: BorderRadius.circular(radius),
-        border: Border.all(color: AppColors.glassBorder, width: 1.4),
-        boxShadow: [
-          BoxShadow(color: AppColors.leaf.withValues(alpha: 0.10), blurRadius: 18, offset: const Offset(0, 8)),
+        border: Border.all(color: Colors.white.withValues(alpha: 0.9), width: 1.2),
+        boxShadow: const [
+          BoxShadow(color: Color(0x1A1B5E20), blurRadius: 18, offset: Offset(0, 8)),
         ],
       ),
       child: child,

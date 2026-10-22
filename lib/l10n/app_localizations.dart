@@ -1334,18 +1334,6 @@ abstract class AppLocalizations {
   /// **'Thunderstorm'**
   String get weatherThunderstorm;
 
-  /// No description provided for @weatherLightRain.
-  ///
-  /// In en, this message translates to:
-  /// **'Light rain'**
-  String get weatherLightRain;
-
-  /// No description provided for @weatherHeavyRain.
-  ///
-  /// In en, this message translates to:
-  /// **'Heavy rain'**
-  String get weatherHeavyRain;
-
   /// No description provided for @adviceThunderTitle.
   ///
   /// In en, this message translates to:
@@ -1651,6 +1639,720 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Could not load data. Check your internet connection and try again.'**
   String get errorLoad;
+
+  /// No description provided for @navDss.
+  ///
+  /// In en, this message translates to:
+  /// **'DSS'**
+  String get navDss;
+
+  /// No description provided for @dssMyTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Farm Decision Support'**
+  String get dssMyTitle;
+
+  /// No description provided for @dssMySubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter your crop and get advice made for your farm'**
+  String get dssMySubtitle;
+
+  /// No description provided for @dssMyDisclaimer.
+  ///
+  /// In en, this message translates to:
+  /// **'These numbers are estimates and a guide only, not official data or a guaranteed forecast. Confirm with your Municipal Agriculture Office before making big decisions.'**
+  String get dssMyDisclaimer;
+
+  /// No description provided for @dssMonthsShort.
+  ///
+  /// In en, this message translates to:
+  /// **'Jan,Feb,Mar,Apr,May,Jun,Jul,Aug,Sep,Oct,Nov,Dec'**
+  String get dssMonthsShort;
+
+  /// No description provided for @dssEmptyTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Add your first crop'**
+  String get dssEmptyTitle;
+
+  /// No description provided for @dssEmptyBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter the crop, land size and planting date. The planting advice, expected harvest, income and selling time will appear here.'**
+  String get dssEmptyBody;
+
+  /// No description provided for @dssAddPlanting.
+  ///
+  /// In en, this message translates to:
+  /// **'Add crop'**
+  String get dssAddPlanting;
+
+  /// No description provided for @dssEditPlanting.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit crop'**
+  String get dssEditPlanting;
+
+  /// No description provided for @dssAdd.
+  ///
+  /// In en, this message translates to:
+  /// **'Add'**
+  String get dssAdd;
+
+  /// No description provided for @dssDelete.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete'**
+  String get dssDelete;
+
+  /// No description provided for @dssDeleteTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete this crop?'**
+  String get dssDeleteTitle;
+
+  /// No description provided for @dssDeleteBody.
+  ///
+  /// In en, this message translates to:
+  /// **'{crop} will be removed from your list.'**
+  String dssDeleteBody(String crop);
+
+  /// No description provided for @dssMyPlantings.
+  ///
+  /// In en, this message translates to:
+  /// **'My crops'**
+  String get dssMyPlantings;
+
+  /// No description provided for @dssCrop.
+  ///
+  /// In en, this message translates to:
+  /// **'Crop'**
+  String get dssCrop;
+
+  /// No description provided for @dssLandSize.
+  ///
+  /// In en, this message translates to:
+  /// **'Land size'**
+  String get dssLandSize;
+
+  /// No description provided for @dssLandSizeHint.
+  ///
+  /// In en, this message translates to:
+  /// **'In hectares. 1,000 sq m = 0.1 ha'**
+  String get dssLandSizeHint;
+
+  /// No description provided for @dssAreaInvalid.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter a number greater than 0'**
+  String get dssAreaInvalid;
+
+  /// No description provided for @dssPlantedOn.
+  ///
+  /// In en, this message translates to:
+  /// **'Date planted'**
+  String get dssPlantedOn;
+
+  /// No description provided for @dssLastYield.
+  ///
+  /// In en, this message translates to:
+  /// **'Last harvest (optional)'**
+  String get dssLastYield;
+
+  /// No description provided for @dssLastYieldHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Total kg from your last harvest on this land. Makes the estimate closer to your farm.'**
+  String get dssLastYieldHint;
+
+  /// No description provided for @dssDaysGrown.
+  ///
+  /// In en, this message translates to:
+  /// **'Days since planting'**
+  String get dssDaysGrown;
+
+  /// No description provided for @dssDaysCount.
+  ///
+  /// In en, this message translates to:
+  /// **'{n} days'**
+  String dssDaysCount(int n);
+
+  /// No description provided for @dssNotYet.
+  ///
+  /// In en, this message translates to:
+  /// **'Not yet planted'**
+  String get dssNotYet;
+
+  /// No description provided for @dssExpectedHarvest.
+  ///
+  /// In en, this message translates to:
+  /// **'Expected harvest'**
+  String get dssExpectedHarvest;
+
+  /// No description provided for @dssHarvestYearRound.
+  ///
+  /// In en, this message translates to:
+  /// **'Harvested through the year'**
+  String get dssHarvestYearRound;
+
+  /// No description provided for @dssPlantingAdvisory.
+  ///
+  /// In en, this message translates to:
+  /// **'Planting advice'**
+  String get dssPlantingAdvisory;
+
+  /// No description provided for @dssPlantingAdvisorySub.
+  ///
+  /// In en, this message translates to:
+  /// **'Which months are best for this crop'**
+  String get dssPlantingAdvisorySub;
+
+  /// No description provided for @dssFitBest.
+  ///
+  /// In en, this message translates to:
+  /// **'Now is a good time to plant {crop}'**
+  String dssFitBest(String crop);
+
+  /// No description provided for @dssFitPossible.
+  ///
+  /// In en, this message translates to:
+  /// **'You can plant {crop} now, but it is not the best time'**
+  String dssFitPossible(String crop);
+
+  /// No description provided for @dssFitAvoid.
+  ///
+  /// In en, this message translates to:
+  /// **'Not a good time to plant {crop} now'**
+  String dssFitAvoid(String crop);
+
+  /// No description provided for @dssLegendBest.
+  ///
+  /// In en, this message translates to:
+  /// **'Best'**
+  String get dssLegendBest;
+
+  /// No description provided for @dssLegendPossible.
+  ///
+  /// In en, this message translates to:
+  /// **'Possible'**
+  String get dssLegendPossible;
+
+  /// No description provided for @dssLegendAvoid.
+  ///
+  /// In en, this message translates to:
+  /// **'Avoid'**
+  String get dssLegendAvoid;
+
+  /// No description provided for @dssNextBest.
+  ///
+  /// In en, this message translates to:
+  /// **'Next best months'**
+  String get dssNextBest;
+
+  /// No description provided for @dssWeatherBasis.
+  ///
+  /// In en, this message translates to:
+  /// **'Based on'**
+  String get dssWeatherBasis;
+
+  /// No description provided for @dssWeatherBasisBody.
+  ///
+  /// In en, this message translates to:
+  /// **'the usual rainy and dry seasons in Laguna. Check the weather forecast before planting.'**
+  String get dssWeatherBasisBody;
+
+  /// No description provided for @dssHarvestIncome.
+  ///
+  /// In en, this message translates to:
+  /// **'Harvest and income'**
+  String get dssHarvestIncome;
+
+  /// No description provided for @dssHarvestIncomeSub.
+  ///
+  /// In en, this message translates to:
+  /// **'Estimate with a range'**
+  String get dssHarvestIncomeSub;
+
+  /// No description provided for @dssExpectedYield.
+  ///
+  /// In en, this message translates to:
+  /// **'Expected harvest'**
+  String get dssExpectedYield;
+
+  /// No description provided for @dssYieldPerYear.
+  ///
+  /// In en, this message translates to:
+  /// **'Harvest per year'**
+  String get dssYieldPerYear;
+
+  /// No description provided for @dssExpectedIncome.
+  ///
+  /// In en, this message translates to:
+  /// **'Expected income'**
+  String get dssExpectedIncome;
+
+  /// No description provided for @dssNoPrice.
+  ///
+  /// In en, this message translates to:
+  /// **'No sample price for this crop'**
+  String get dssNoPrice;
+
+  /// No description provided for @dssNoEstimate.
+  ///
+  /// In en, this message translates to:
+  /// **'No estimate available for this crop yet.'**
+  String get dssNoEstimate;
+
+  /// No description provided for @dssLow.
+  ///
+  /// In en, this message translates to:
+  /// **'Low'**
+  String get dssLow;
+
+  /// No description provided for @dssLikely.
+  ///
+  /// In en, this message translates to:
+  /// **'Likely'**
+  String get dssLikely;
+
+  /// No description provided for @dssHigh.
+  ///
+  /// In en, this message translates to:
+  /// **'High'**
+  String get dssHigh;
+
+  /// No description provided for @dssHowComputed.
+  ///
+  /// In en, this message translates to:
+  /// **'How it is computed'**
+  String get dssHowComputed;
+
+  /// No description provided for @dssBasisOwn.
+  ///
+  /// In en, this message translates to:
+  /// **'Your last harvest per hectare, for {ha} (±15%).'**
+  String dssBasisOwn(String ha);
+
+  /// No description provided for @dssBasisTypical.
+  ///
+  /// In en, this message translates to:
+  /// **'Typical harvest of about {kgHa} kg per hectare, for {ha}.'**
+  String dssBasisTypical(String ha, String kgHa);
+
+  /// No description provided for @dssPriceUsed.
+  ///
+  /// In en, this message translates to:
+  /// **'Price used'**
+  String get dssPriceUsed;
+
+  /// No description provided for @dssPriceAdvisory.
+  ///
+  /// In en, this message translates to:
+  /// **'Price advice'**
+  String get dssPriceAdvisory;
+
+  /// No description provided for @dssPriceAdvisorySub.
+  ///
+  /// In en, this message translates to:
+  /// **'Which months prices are usually high'**
+  String get dssPriceAdvisorySub;
+
+  /// No description provided for @dssSellBest.
+  ///
+  /// In en, this message translates to:
+  /// **'Prices are expected to be higher in {months}'**
+  String dssSellBest(String months);
+
+  /// No description provided for @dssLegendHighPrice.
+  ///
+  /// In en, this message translates to:
+  /// **'Higher price'**
+  String get dssLegendHighPrice;
+
+  /// No description provided for @dssLegendLowPrice.
+  ///
+  /// In en, this message translates to:
+  /// **'Lower price'**
+  String get dssLegendLowPrice;
+
+  /// No description provided for @dssYourHarvest.
+  ///
+  /// In en, this message translates to:
+  /// **'Your harvest'**
+  String get dssYourHarvest;
+
+  /// No description provided for @dssHarvestHighPrice.
+  ///
+  /// In en, this message translates to:
+  /// **'You will likely harvest around {month}, when prices are usually good.'**
+  String dssHarvestHighPrice(String month);
+
+  /// No description provided for @dssHarvestLowPrice.
+  ///
+  /// In en, this message translates to:
+  /// **'You will likely harvest around {month}, when many farmers harvest and prices tend to be lower.'**
+  String dssHarvestLowPrice(String month);
+
+  /// No description provided for @dssTipStorable.
+  ///
+  /// In en, this message translates to:
+  /// **'This crop keeps well. If you can store it safely, consider selling in {months}.'**
+  String dssTipStorable(String months);
+
+  /// No description provided for @dssTipFresh.
+  ///
+  /// In en, this message translates to:
+  /// **'This crop spoils quickly, so sell soon after harvest. Ask buyers for the best price and sell directly if you can.'**
+  String get dssTipFresh;
+
+  /// No description provided for @dssPriceRangeYear.
+  ///
+  /// In en, this message translates to:
+  /// **'Price range through the year'**
+  String get dssPriceRangeYear;
+
+  /// No description provided for @dssPriceFlat.
+  ///
+  /// In en, this message translates to:
+  /// **'There is no clear monthly price pattern for {crop} in our guide.'**
+  String dssPriceFlat(String crop);
+
+  /// No description provided for @dssFarmMap.
+  ///
+  /// In en, this message translates to:
+  /// **'My farm map'**
+  String get dssFarmMap;
+
+  /// No description provided for @dssFarmMapSub.
+  ///
+  /// In en, this message translates to:
+  /// **'Farm location and weather there now'**
+  String get dssFarmMapSub;
+
+  /// No description provided for @dssMapHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Tap the map to move the pin to your farm.'**
+  String get dssMapHint;
+
+  /// No description provided for @dssResetLocation.
+  ///
+  /// In en, this message translates to:
+  /// **'Back to Pagsanjan center'**
+  String get dssResetLocation;
+
+  /// No description provided for @dssWeatherHere.
+  ///
+  /// In en, this message translates to:
+  /// **'Weather at your farm now'**
+  String get dssWeatherHere;
+
+  /// No description provided for @dssWeatherFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not load the weather here.'**
+  String get dssWeatherFailed;
+
+  /// No description provided for @dssFeelsLike.
+  ///
+  /// In en, this message translates to:
+  /// **'Feels like'**
+  String get dssFeelsLike;
+
+  /// No description provided for @dssSummaryTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'DSS'**
+  String get dssSummaryTitle;
+
+  /// No description provided for @dssSummaryEmpty.
+  ///
+  /// In en, this message translates to:
+  /// **'Add your crop in the DSS tab to get advice for your farm'**
+  String get dssSummaryEmpty;
+
+  /// No description provided for @dssSummaryLine.
+  ///
+  /// In en, this message translates to:
+  /// **'Expected harvest about {kg}, income {low} to {high}.'**
+  String dssSummaryLine(String kg, String low, String high);
+
+  /// No description provided for @dssSummaryLineNoPrice.
+  ///
+  /// In en, this message translates to:
+  /// **'Expected harvest about {kg}.'**
+  String dssSummaryLineNoPrice(String kg);
+
+  /// No description provided for @weatherLightRain.
+  ///
+  /// In en, this message translates to:
+  /// **'Light rain'**
+  String get weatherLightRain;
+
+  /// No description provided for @weatherHeavyRain.
+  ///
+  /// In en, this message translates to:
+  /// **'Heavy rain'**
+  String get weatherHeavyRain;
+
+  /// No description provided for @heatBestWork.
+  ///
+  /// In en, this message translates to:
+  /// **'Best time for field work'**
+  String get heatBestWork;
+
+  /// No description provided for @heatNoSafe.
+  ///
+  /// In en, this message translates to:
+  /// **'Avoid long field work today'**
+  String get heatNoSafe;
+
+  /// No description provided for @priceNoMyCrops.
+  ///
+  /// In en, this message translates to:
+  /// **'Add your crop in the DSS tab to see its expected price here.'**
+  String get priceNoMyCrops;
+
+  /// No description provided for @cropAdvHarvestReadyTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'{crop}: check for harvest'**
+  String cropAdvHarvestReadyTitle(String crop);
+
+  /// No description provided for @cropAdvHarvestReadyMsg.
+  ///
+  /// In en, this message translates to:
+  /// **'Your {crop} has reached the usual harvest age. Check the crop and plan your harvest and buyers.'**
+  String cropAdvHarvestReadyMsg(String crop);
+
+  /// No description provided for @cropAdvHarvestSoonTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'{crop}: harvest is near'**
+  String cropAdvHarvestSoonTitle(String crop);
+
+  /// No description provided for @cropAdvHarvestSoonMsg.
+  ///
+  /// In en, this message translates to:
+  /// **'Your {crop} may be ready in about {days} days. Prepare containers, workers and buyers.'**
+  String cropAdvHarvestSoonMsg(String crop, int days);
+
+  /// No description provided for @cropAdvDrainageTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'{crop}: check drainage'**
+  String cropAdvDrainageTitle(String crop);
+
+  /// No description provided for @cropAdvDrainageMsg.
+  ///
+  /// In en, this message translates to:
+  /// **'Heavy rain is expected in the next 3 days. Clear the canals so water does not pool around your {crop}.'**
+  String cropAdvDrainageMsg(String crop);
+
+  /// No description provided for @cropAdvHeatTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'{crop}: protect from heat'**
+  String cropAdvHeatTitle(String crop);
+
+  /// No description provided for @cropAdvHeatMsg.
+  ///
+  /// In en, this message translates to:
+  /// **'It is very hot today. Water your {crop} early morning or late afternoon, not at midday.'**
+  String cropAdvHeatMsg(String crop);
+
+  /// No description provided for @cropAdvWindTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'{crop}: secure your plants'**
+  String cropAdvWindTitle(String crop);
+
+  /// No description provided for @cropAdvWindMsg.
+  ///
+  /// In en, this message translates to:
+  /// **'Strong wind today. Support or tie your {crop} so the plants do not fall.'**
+  String cropAdvWindMsg(String crop);
+
+  /// No description provided for @cropAdvDryTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'{crop}: good drying days'**
+  String cropAdvDryTitle(String crop);
+
+  /// No description provided for @cropAdvDryMsg.
+  ///
+  /// In en, this message translates to:
+  /// **'Dry days ahead. Good for harvesting and drying your {crop}, and for spraying and fertilizing.'**
+  String cropAdvDryMsg(String crop);
+
+  /// No description provided for @notifStormTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Thunderstorm now'**
+  String get notifStormTitle;
+
+  /// No description provided for @notifStormMsg.
+  ///
+  /// In en, this message translates to:
+  /// **'Stay out of open fields and keep tools and animals under shelter.'**
+  String get notifStormMsg;
+
+  /// No description provided for @notifRainTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Heavy rain expected'**
+  String get notifRainTitle;
+
+  /// No description provided for @notifRainMsg.
+  ///
+  /// In en, this message translates to:
+  /// **'About {mm} mm of rain in the next 3 days. Clear your canals so water does not pool in the field.'**
+  String notifRainMsg(int mm);
+
+  /// No description provided for @notifHeatTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Dangerous heat today'**
+  String get notifHeatTitle;
+
+  /// No description provided for @notifHeatMsg.
+  ///
+  /// In en, this message translates to:
+  /// **'Heat index up to {hi}°C. Avoid field work at midday, rest in the shade and drink water.'**
+  String notifHeatMsg(int hi);
+
+  /// No description provided for @notifHarvestReadyTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'{crop}: check for harvest'**
+  String notifHarvestReadyTitle(String crop);
+
+  /// No description provided for @notifHarvestReadyMsg.
+  ///
+  /// In en, this message translates to:
+  /// **'Your {crop} has reached the usual harvest age. Check the crop and plan your harvest.'**
+  String notifHarvestReadyMsg(String crop);
+
+  /// No description provided for @notifHarvestSoonTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'{crop}: harvest is near'**
+  String notifHarvestSoonTitle(String crop);
+
+  /// No description provided for @notifHarvestSoonMsg.
+  ///
+  /// In en, this message translates to:
+  /// **'Your {crop} may be ready in about {days} days.'**
+  String notifHarvestSoonMsg(String crop, int days);
+
+  /// No description provided for @notifMarketUpTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'{crop} price may go up'**
+  String notifMarketUpTitle(String crop);
+
+  /// No description provided for @notifMarketUpMsg.
+  ///
+  /// In en, this message translates to:
+  /// **'The price of {crop} may rise about {percent}% in the next 7 days. This is an estimate from the weather forecast.'**
+  String notifMarketUpMsg(String crop, int percent);
+
+  /// No description provided for @notifMarketDownTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'{crop} price may go down'**
+  String notifMarketDownTitle(String crop);
+
+  /// No description provided for @notifMarketDownMsg.
+  ///
+  /// In en, this message translates to:
+  /// **'The price of {crop} may fall about {percent}% in the next 7 days. This is an estimate from the weather forecast.'**
+  String notifMarketDownMsg(String crop, int percent);
+
+  /// No description provided for @notifPlantingNowTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Good time to plant {crop}'**
+  String notifPlantingNowTitle(String crop);
+
+  /// No description provided for @notifPlantingNowMsg.
+  ///
+  /// In en, this message translates to:
+  /// **'This month is one of the best months to plant {crop} in Pagsanjan, Laguna.'**
+  String notifPlantingNowMsg(String crop);
+
+  /// No description provided for @dssUnitHa.
+  ///
+  /// In en, this message translates to:
+  /// **'Hectares (ha)'**
+  String get dssUnitHa;
+
+  /// No description provided for @dssUnitSqm.
+  ///
+  /// In en, this message translates to:
+  /// **'Square meters (m²)'**
+  String get dssUnitSqm;
+
+  /// No description provided for @dssUnitNote.
+  ///
+  /// In en, this message translates to:
+  /// **'1 hectare = 10,000 m². You can switch between the two anytime.'**
+  String get dssUnitNote;
+
+  /// No description provided for @dssTotalLand.
+  ///
+  /// In en, this message translates to:
+  /// **'Total land size'**
+  String get dssTotalLand;
+
+  /// No description provided for @dssTotalLandSub.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter the whole size of your farm. You will divide it among your crops in \"Add crop\".'**
+  String get dssTotalLandSub;
+
+  /// No description provided for @dssTotalTooSmall.
+  ///
+  /// In en, this message translates to:
+  /// **'Too small. Your crops already use {area}.'**
+  String dssTotalTooSmall(String area);
+
+  /// No description provided for @dssExceeds.
+  ///
+  /// In en, this message translates to:
+  /// **'Too much. Only {area} of your land is left.'**
+  String dssExceeds(String area);
+
+  /// No description provided for @dssRemaining.
+  ///
+  /// In en, this message translates to:
+  /// **'Remaining: {area}'**
+  String dssRemaining(String area);
+
+  /// No description provided for @dssLandUsed.
+  ///
+  /// In en, this message translates to:
+  /// **'Planted: {area}'**
+  String dssLandUsed(String area);
+
+  /// No description provided for @dssLandSet.
+  ///
+  /// In en, this message translates to:
+  /// **'Set land size'**
+  String get dssLandSet;
+
+  /// No description provided for @dssLandNotSet.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter your total land size so the app can show how much each crop uses.'**
+  String get dssLandNotSet;
+
+  /// No description provided for @farmUnallocated.
+  ///
+  /// In en, this message translates to:
+  /// **'Not planted'**
+  String get farmUnallocated;
 }
 
 class _AppLocalizationsDelegate

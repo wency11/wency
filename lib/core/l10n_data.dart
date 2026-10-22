@@ -1,4 +1,5 @@
 import '../l10n/app_localizations.dart';
+import 'crop_l10n.dart';
 import '../models/app_notification.dart';
 import '../models/farm_advice.dart';
 import '../models/farm_models.dart';
@@ -89,33 +90,47 @@ extension AppL10nData on AppLocalizations {
     }
   }
 
-  String notifTitle(NotificationType n) {
-    switch (n) {
-      case NotificationType.weather:
-        return notifWeatherTitle;
-      case NotificationType.market:
-        return notifMarketTitle;
-      case NotificationType.planting:
-        return notifPlantingTitle;
-      case NotificationType.pest:
-        return notifPestTitle;
-      case NotificationType.subsidy:
-        return notifSubsidyTitle;
+  String notifTitle(AppNotification n) {
+    final c = cropLabel(n.crop ?? '');
+    switch (n.type) {
+      case NotificationType.stormAlert:
+        return notifStormTitle;
+      case NotificationType.rainAlert:
+        return notifRainTitle;
+      case NotificationType.heatAlert:
+        return notifHeatTitle;
+      case NotificationType.harvestReady:
+        return notifHarvestReadyTitle(c);
+      case NotificationType.harvestSoon:
+        return notifHarvestSoonTitle(c);
+      case NotificationType.marketUp:
+        return notifMarketUpTitle(c);
+      case NotificationType.marketDown:
+        return notifMarketDownTitle(c);
+      case NotificationType.plantingNow:
+        return notifPlantingNowTitle(c);
     }
   }
 
-  String notifMessage(NotificationType n) {
-    switch (n) {
-      case NotificationType.weather:
-        return notifWeatherMsg;
-      case NotificationType.market:
-        return notifMarketMsg;
-      case NotificationType.planting:
-        return notifPlantingMsg;
-      case NotificationType.pest:
-        return notifPestMsg;
-      case NotificationType.subsidy:
-        return notifSubsidyMsg;
+  String notifMessage(AppNotification n) {
+    final c = cropLabel(n.crop ?? '');
+    switch (n.type) {
+      case NotificationType.stormAlert:
+        return notifStormMsg;
+      case NotificationType.rainAlert:
+        return notifRainMsg(n.value);
+      case NotificationType.heatAlert:
+        return notifHeatMsg(n.value);
+      case NotificationType.harvestReady:
+        return notifHarvestReadyMsg(c);
+      case NotificationType.harvestSoon:
+        return notifHarvestSoonMsg(c, n.value);
+      case NotificationType.marketUp:
+        return notifMarketUpMsg(c, n.value);
+      case NotificationType.marketDown:
+        return notifMarketDownMsg(c, n.value);
+      case NotificationType.plantingNow:
+        return notifPlantingNowMsg(c);
     }
   }
 

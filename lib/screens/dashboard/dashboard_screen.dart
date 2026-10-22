@@ -4,11 +4,13 @@ import 'package:provider/provider.dart';
 import '../../dashboard_data.dart';
 import '../../l10n/app_localizations.dart';
 import '../../main.dart';
+import '../../providers/farm_input_provider.dart';
 import '../../widgets/common_widgets.dart';
 import '../login_screen.dart';
 import 'dialogs/notifications_modal.dart';
+import 'tabs/dss_tab.dart';
 import 'tabs/farm_tab.dart';
-import 'tabs/home_tab.dart';
+import 'tabs/weather_tab.dart';
 import 'tabs/prices_tab.dart';
 import 'tabs/settings_tab.dart';
 
@@ -25,8 +27,9 @@ class _DashboardScreenState extends State<DashboardScreen> {
 
   // (outlined icon, filled icon) - ang mga label ay galing sa ARB
   static const _icons = [
-    (Icons.home_outlined, Icons.home_rounded),
+    (Icons.wb_sunny_outlined, Icons.wb_sunny_rounded),
     (Icons.landscape_outlined, Icons.landscape_rounded),
+    (Icons.insights_outlined, Icons.insights_rounded),
     (Icons.sell_outlined, Icons.sell_rounded),
     (Icons.settings_outlined, Icons.settings_rounded),
   ];
@@ -36,8 +39,9 @@ class _DashboardScreenState extends State<DashboardScreen> {
     if (p.hasError) return ErrorView(message: t.errorLoad, onRetry: p.load);
 
     final tabs = <Widget>[
-      HomeTab(p: p),
-      FarmTab(p: p),
+      WeatherTab(p: p, onOpenDss: () => setState(() => _tab = 2)),
+      FarmTab(p: p, onOpenDss: () => setState(() => _tab = 2)),
+      const DssTab(),
       PricesTab(p: p),
       SettingsTab(p: p),
     ];
@@ -68,8 +72,14 @@ class _DashboardScreenState extends State<DashboardScreen> {
     final p = context.watch<DashboardProvider>();
     if (!p.isLoggedIn) return LoginScreen(p: p);
 
+    // Ipasa sa dashboard ang mga pananim na inilagay ng farmer sa DSS (presyo, hula).
+    final farm = context.watch<FarmInputProvider>();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted) p.syncPlantings(farm.plantings);
+    });
+
     final t = AppLocalizations.of(context)!;
-    final labels = [t.navHome, t.navFarm, t.navPrices, t.navSettings];
+    final labels = [t.navWeather, t.navFarm, t.navDss, t.navPrices, t.navSettings];
 
     return Container(
       decoration: const BoxDecoration(
@@ -83,34 +93,19 @@ class _DashboardScreenState extends State<DashboardScreen> {
         backgroundColor: Colors.transparent,
         appBar: _DashboardAppBar(p: p),
         body: _buildBody(p, t),
-        bottomNavigationBar: SafeArea(
-          top: false,
-          child: Container(
-            margin: const EdgeInsets.fromLTRB(14, 0, 14, 10),
-            decoration: BoxDecoration(
-              color: AppColors.navBg,
-              borderRadius: BorderRadius.circular(30),
-              border: Border.all(color: AppColors.glassBorder, width: 1.4),
-              boxShadow: [
-                BoxShadow(color: AppColors.leaf.withValues(alpha: 0.16), blurRadius: 20, offset: const Offset(0, 8)),
-              ],
-            ),
-            child: ClipRRect(
-              borderRadius: BorderRadius.circular(30),
-              child: NavigationBar(
-                backgroundColor: Colors.transparent,
-                selectedIndex: _tab,
-                onDestinationSelected: (i) => setState(() => _tab = i),
-                destinations: [
-                  for (var i = 0; i < _icons.length; i++)
-                    NavigationDestination(
-                      icon: Icon(_icons[i].$1),
-                      selectedIcon: Icon(_icons[i].$2),
-                      label: labels[i],
-                    ),
-                ],
-              ),
-            ),
+        bottomNavigationBar: DecoratedBox(
+          decoration: const BoxDecoration(border: Border(top: BorderSide(color: AppColors.border))),
+          child: NavigationBar(
+            selectedIndex: _tab,
+            onDestinationSelected: (i) => setState(() => _tab = i),
+            destinations: [
+              for (var i = 0; i < _icons.length; i++)
+                NavigationDestination(
+                  icon: Icon(_icons[i].$1),
+                  selectedIcon: Icon(_icons[i].$2),
+                  label: labels[i],
+                ),
+            ],
           ),
         ),
       ),

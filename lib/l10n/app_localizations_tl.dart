@@ -717,12 +717,6 @@ class AppLocalizationsTl extends AppLocalizations {
   String get weatherThunderstorm => 'Kulog at ulan';
 
   @override
-  String get weatherLightRain => 'Mahinang ulan';
-
-  @override
-  String get weatherHeavyRain => 'Malakas na ulan';
-
-  @override
   String get adviceThunderTitle => 'Banta ng kulog at kidlat';
 
   @override
@@ -902,4 +896,459 @@ class AppLocalizationsTl extends AppLocalizations {
   @override
   String get errorLoad =>
       'Hindi maikonekta. Tiyaking may internet connection at subukang muli.';
+
+  @override
+  String get navDss => 'DSS';
+
+  @override
+  String get dssMyTitle => 'Gabay sa Desisyon sa Bukid';
+
+  @override
+  String get dssMySubtitle =>
+      'Ilagay ang tanim mo at makakuha ng payong akma sa bukid mo';
+
+  @override
+  String get dssMyDisclaimer =>
+      'Ang mga numerong ito ay tantiya at gabay lamang, hindi opisyal na datos o garantiyang forecast. Kumpirmahin sa Tanggapan ng Pambayang Agrikultura bago gumawa ng malalaking desisyon.';
+
+  @override
+  String get dssMonthsShort =>
+      'Ene,Peb,Mar,Abr,May,Hun,Hul,Ago,Set,Okt,Nob,Dis';
+
+  @override
+  String get dssEmptyTitle => 'Idagdag ang una mong tanim';
+
+  @override
+  String get dssEmptyBody =>
+      'Ilagay ang pananim, laki ng lupa at petsa ng pagtanim. Lalabas dito ang payo sa pagtatanim, inaasahang ani, kita at tamang oras ng pagbebenta.';
+
+  @override
+  String get dssAddPlanting => 'Magdagdag ng tanim';
+
+  @override
+  String get dssEditPlanting => 'I-edit ang tanim';
+
+  @override
+  String get dssAdd => 'Dagdag';
+
+  @override
+  String get dssDelete => 'Burahin';
+
+  @override
+  String get dssDeleteTitle => 'Burahin ang tanim na ito?';
+
+  @override
+  String dssDeleteBody(String crop) {
+    return 'Aalisin ang $crop sa listahan mo.';
+  }
+
+  @override
+  String get dssMyPlantings => 'Mga tanim ko';
+
+  @override
+  String get dssCrop => 'Pananim';
+
+  @override
+  String get dssLandSize => 'Laki ng lupa';
+
+  @override
+  String get dssLandSizeHint => 'Sa ektarya. 1,000 sq m = 0.1 ha';
+
+  @override
+  String get dssAreaInvalid => 'Maglagay ng numerong higit sa 0';
+
+  @override
+  String get dssPlantedOn => 'Petsa ng pagtanim';
+
+  @override
+  String get dssLastYield => 'Huling ani (opsyonal)';
+
+  @override
+  String get dssLastYieldHint =>
+      'Kabuuang kg sa huling ani mo sa lupang ito. Mas lalapit ang tantiya sa bukid mo.';
+
+  @override
+  String get dssDaysGrown => 'Araw mula nang itanim';
+
+  @override
+  String dssDaysCount(int n) {
+    return '$n araw';
+  }
+
+  @override
+  String get dssNotYet => 'Hindi pa naitatanim';
+
+  @override
+  String get dssExpectedHarvest => 'Inaasahang ani (panahon)';
+
+  @override
+  String get dssHarvestYearRound => 'Inaani buong taon';
+
+  @override
+  String get dssPlantingAdvisory => 'Payo sa pagtatanim';
+
+  @override
+  String get dssPlantingAdvisorySub =>
+      'Aling buwan ang pinakamainam sa pananim na ito';
+
+  @override
+  String dssFitBest(String crop) {
+    return 'Magandang panahon ngayon magtanim ng $crop';
+  }
+
+  @override
+  String dssFitPossible(String crop) {
+    return 'Puwede ngayong magtanim ng $crop, pero hindi ito ang pinakamainam na panahon';
+  }
+
+  @override
+  String dssFitAvoid(String crop) {
+    return 'Hindi magandang panahon ngayon magtanim ng $crop';
+  }
+
+  @override
+  String get dssLegendBest => 'Pinakamainam';
+
+  @override
+  String get dssLegendPossible => 'Puwede';
+
+  @override
+  String get dssLegendAvoid => 'Iwasan';
+
+  @override
+  String get dssNextBest => 'Susunod na pinakamainam na buwan';
+
+  @override
+  String get dssWeatherBasis => 'Batay sa';
+
+  @override
+  String get dssWeatherBasisBody =>
+      'karaniwang tag-ulan at tag-init sa Laguna. Tingnan ang weather forecast bago magtanim.';
+
+  @override
+  String get dssHarvestIncome => 'Ani at kita';
+
+  @override
+  String get dssHarvestIncomeSub => 'Tantiya na may saklaw';
+
+  @override
+  String get dssExpectedYield => 'Inaasahang ani';
+
+  @override
+  String get dssYieldPerYear => 'Ani bawat taon';
+
+  @override
+  String get dssExpectedIncome => 'Inaasahang kita';
+
+  @override
+  String get dssNoPrice => 'Walang halimbawang presyo para sa pananim na ito';
+
+  @override
+  String get dssNoEstimate => 'Wala pang tantiya para sa pananim na ito.';
+
+  @override
+  String get dssLow => 'Mababa';
+
+  @override
+  String get dssLikely => 'Malamang';
+
+  @override
+  String get dssHigh => 'Mataas';
+
+  @override
+  String get dssHowComputed => 'Paano kinuwenta';
+
+  @override
+  String dssBasisOwn(String ha) {
+    return 'Ang huling ani mo kada ektarya, para sa $ha (±15%).';
+  }
+
+  @override
+  String dssBasisTypical(String ha, String kgHa) {
+    return 'Karaniwang ani na mga $kgHa kg kada ektarya, para sa $ha.';
+  }
+
+  @override
+  String get dssPriceUsed => 'Presyong ginamit';
+
+  @override
+  String get dssPriceAdvisory => 'Payo sa presyo';
+
+  @override
+  String get dssPriceAdvisorySub => 'Aling buwan karaniwang mataas ang presyo';
+
+  @override
+  String dssSellBest(String months) {
+    return 'Inaasahang mas mataas ang presyo sa $months';
+  }
+
+  @override
+  String get dssLegendHighPrice => 'Mas mataas na presyo';
+
+  @override
+  String get dssLegendLowPrice => 'Mas mababang presyo';
+
+  @override
+  String get dssYourHarvest => 'Ang ani mo';
+
+  @override
+  String dssHarvestHighPrice(String month) {
+    return 'Malamang aanihin mo sa paligid ng $month, kung kailan karaniwang maganda ang presyo.';
+  }
+
+  @override
+  String dssHarvestLowPrice(String month) {
+    return 'Malamang aanihin mo sa paligid ng $month, kung kailan maraming nag-aani at karaniwang mababa ang presyo.';
+  }
+
+  @override
+  String dssTipStorable(String months) {
+    return 'Tumatagal ang pananim na ito. Kung kaya mong itago nang ligtas, isaalang-alang ang pagbebenta sa $months.';
+  }
+
+  @override
+  String get dssTipFresh =>
+      'Mabilis masira ang pananim na ito, kaya ibenta agad pagkatapos anihin. Magtanong sa mga mamimili ng pinakamagandang presyo at direktang magbenta kung kaya.';
+
+  @override
+  String get dssPriceRangeYear => 'Saklaw ng presyo sa buong taon';
+
+  @override
+  String dssPriceFlat(String crop) {
+    return 'Walang malinaw na buwanang pattern ng presyo para sa $crop sa gabay namin.';
+  }
+
+  @override
+  String get dssFarmMap => 'Mapa ng bukid ko';
+
+  @override
+  String get dssFarmMapSub => 'Lokasyon ng bukid at panahon doon ngayon';
+
+  @override
+  String get dssMapHint => 'I-tap ang mapa para ilipat ang pin sa bukid mo.';
+
+  @override
+  String get dssResetLocation => 'Ibalik sa gitna ng Pagsanjan';
+
+  @override
+  String get dssWeatherHere => 'Panahon sa bukid mo ngayon';
+
+  @override
+  String get dssWeatherFailed => 'Hindi ma-load ang panahon dito.';
+
+  @override
+  String get dssFeelsLike => 'Pakiramdam';
+
+  @override
+  String get dssSummaryTitle => 'DSS';
+
+  @override
+  String get dssSummaryEmpty =>
+      'Idagdag ang tanim mo sa DSS tab para makakuha ng payo para sa bukid mo';
+
+  @override
+  String dssSummaryLine(String kg, String low, String high) {
+    return 'Inaasahang ani mga $kg, kita $low hanggang $high.';
+  }
+
+  @override
+  String dssSummaryLineNoPrice(String kg) {
+    return 'Inaasahang ani mga $kg.';
+  }
+
+  @override
+  String get weatherLightRain => 'Mahinang ulan';
+
+  @override
+  String get weatherHeavyRain => 'Malakas na ulan';
+
+  @override
+  String get heatBestWork => 'Pinakamainam na oras sa bukid';
+
+  @override
+  String get heatNoSafe => 'Iwasan ang matagal na trabaho sa bukid ngayon';
+
+  @override
+  String get priceNoMyCrops =>
+      'Idagdag ang iyong pananim sa DSS tab para makita rito ang inaasahang presyo nito.';
+
+  @override
+  String cropAdvHarvestReadyTitle(String crop) {
+    return '$crop: suriin para sa ani';
+  }
+
+  @override
+  String cropAdvHarvestReadyMsg(String crop) {
+    return 'Umabot na ang $crop mo sa karaniwang edad ng ani. Suriin ang tanim at ihanda ang pag-aani at mga mamimili.';
+  }
+
+  @override
+  String cropAdvHarvestSoonTitle(String crop) {
+    return '$crop: malapit na ang ani';
+  }
+
+  @override
+  String cropAdvHarvestSoonMsg(String crop, int days) {
+    return 'Maaaring handa na ang $crop mo sa mga $days araw. Ihanda ang lalagyan, mga manggagawa, at mamimili.';
+  }
+
+  @override
+  String cropAdvDrainageTitle(String crop) {
+    return '$crop: suriin ang kanal';
+  }
+
+  @override
+  String cropAdvDrainageMsg(String crop) {
+    return 'Inaasahan ang malakas na ulan sa susunod na 3 araw. Linisin ang kanal para hindi mabuhay ang tubig sa paligid ng $crop.';
+  }
+
+  @override
+  String cropAdvHeatTitle(String crop) {
+    return '$crop: protektahan sa init';
+  }
+
+  @override
+  String cropAdvHeatMsg(String crop) {
+    return 'Napakainit ngayon. Diligan ang $crop sa maagang umaga o hapon, hindi sa tanghali.';
+  }
+
+  @override
+  String cropAdvWindTitle(String crop) {
+    return '$crop: suhayan ang tanim';
+  }
+
+  @override
+  String cropAdvWindMsg(String crop) {
+    return 'Malakas ang hangin ngayon. Suhayan o itali ang $crop para hindi matumba.';
+  }
+
+  @override
+  String cropAdvDryTitle(String crop) {
+    return '$crop: magandang panahon sa pagpapatuyo';
+  }
+
+  @override
+  String cropAdvDryMsg(String crop) {
+    return 'Tuyo ang mga darating na araw. Maganda para sa pag-aani at pagpapatuyo ng $crop, pati sa pag-i-spray at pag-aabono.';
+  }
+
+  @override
+  String get notifStormTitle => 'Kulog at kidlat ngayon';
+
+  @override
+  String get notifStormMsg =>
+      'Umiwas sa bukas na bukirin at isilong ang mga kagamitan at alagang hayop.';
+
+  @override
+  String get notifRainTitle => 'Inaasahan ang malakas na ulan';
+
+  @override
+  String notifRainMsg(int mm) {
+    return 'Mga $mm mm ng ulan sa susunod na 3 araw. Linisin ang kanal para hindi mabuhay ang tubig sa bukid.';
+  }
+
+  @override
+  String get notifHeatTitle => 'Mapanganib na init ngayon';
+
+  @override
+  String notifHeatMsg(int hi) {
+    return 'Heat index hanggang $hi°C. Iwasan ang trabaho sa bukid sa tanghali, magpahinga sa lilim at uminom ng tubig.';
+  }
+
+  @override
+  String notifHarvestReadyTitle(String crop) {
+    return '$crop: suriin para sa ani';
+  }
+
+  @override
+  String notifHarvestReadyMsg(String crop) {
+    return 'Umabot na ang $crop mo sa karaniwang edad ng ani. Suriin ang tanim at planuhin ang pag-aani.';
+  }
+
+  @override
+  String notifHarvestSoonTitle(String crop) {
+    return '$crop: malapit na ang ani';
+  }
+
+  @override
+  String notifHarvestSoonMsg(String crop, int days) {
+    return 'Maaaring handa na ang $crop mo sa mga $days araw.';
+  }
+
+  @override
+  String notifMarketUpTitle(String crop) {
+    return 'Maaaring tumaas ang presyo ng $crop';
+  }
+
+  @override
+  String notifMarketUpMsg(String crop, int percent) {
+    return 'Maaaring tumaas ng mga $percent% ang presyo ng $crop sa susunod na 7 araw. Tantiya lamang ito base sa weather forecast.';
+  }
+
+  @override
+  String notifMarketDownTitle(String crop) {
+    return 'Maaaring bumaba ang presyo ng $crop';
+  }
+
+  @override
+  String notifMarketDownMsg(String crop, int percent) {
+    return 'Maaaring bumaba ng mga $percent% ang presyo ng $crop sa susunod na 7 araw. Tantiya lamang ito base sa weather forecast.';
+  }
+
+  @override
+  String notifPlantingNowTitle(String crop) {
+    return 'Magandang panahon para magtanim ng $crop';
+  }
+
+  @override
+  String notifPlantingNowMsg(String crop) {
+    return 'Ang buwang ito ay isa sa pinakamagandang buwan para magtanim ng $crop sa Pagsanjan, Laguna.';
+  }
+
+  @override
+  String get dssUnitHa => 'Hektarya (ha)';
+
+  @override
+  String get dssUnitSqm => 'Metro kuwadrado (m²)';
+
+  @override
+  String get dssUnitNote =>
+      '1 hektarya = 10,000 m². Puwede mong palitan ang yunit anumang oras.';
+
+  @override
+  String get dssTotalLand => 'Kabuuang sukat ng lupa';
+
+  @override
+  String get dssTotalLandSub =>
+      'Ilagay ang buong sukat ng bukid mo. Hahatiin mo ito sa mga pananim sa \"Add crop\".';
+
+  @override
+  String dssTotalTooSmall(String area) {
+    return 'Masyadong maliit. $area na ang nagagamit ng mga pananim mo.';
+  }
+
+  @override
+  String dssExceeds(String area) {
+    return 'Sobra. $area na lang ang natitira sa lupa mo.';
+  }
+
+  @override
+  String dssRemaining(String area) {
+    return 'Natitira: $area';
+  }
+
+  @override
+  String dssLandUsed(String area) {
+    return 'Natataniman: $area';
+  }
+
+  @override
+  String get dssLandSet => 'Ilagay ang sukat';
+
+  @override
+  String get dssLandNotSet =>
+      'Ilagay ang kabuuang sukat ng lupa para makita kung ilan ang sakop ng bawat pananim.';
+
+  @override
+  String get farmUnallocated => 'Hindi pa natataniman';
 }

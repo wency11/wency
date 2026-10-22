@@ -1,11 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:provider/provider.dart';
 
 import '../../../core/crop_l10n.dart';
 import '../../../dashboard_data.dart';
 import '../../../l10n/app_localizations.dart';
 import '../../../main.dart';
+import '../../../models/farm_planting.dart';
 import '../../../models/price_insight.dart';
+import '../../../providers/farm_input_provider.dart';
 import '../../../services/price_insight_service.dart';
 import '../../../widgets/common_widgets.dart';
 import '../../../widgets/crop_image.dart';
@@ -20,8 +23,6 @@ class PricesTab extends StatefulWidget {
 }
 
 class _PricesTabState extends State<PricesTab> {
-  bool _all = false;
-
   PlantingGuide? _guideFor(String crop) {
     for (final g in widget.p.guides) {
       if (g.crop == crop) return g;
@@ -29,22 +30,23 @@ class _PricesTabState extends State<PricesTab> {
     return null;
   }
 
-  /// Pinakabagong naaning tala ng pananim na may ani.
-  CropRecord? _lastHarvest(String crop) {
-    CropRecord? best;
-    for (final r in widget.p.history) {
-      if (r.crop != crop || !r.isHarvested || r.yieldKg <= 0) continue;
-      if (best == null || r.datePlanted.isAfter(best.datePlanted)) best = r;
+  /// Huling ani (kg) na inilagay ng magsasaka sa DSS para sa pananim na ito.
+  double? _lastHarvestKg(FarmInputProvider farm, String crop) {
+    FarmPlanting? best;
+    for (final e in farm.plantings) {
+      if (e.crop != crop || e.lastYieldKg == null || e.lastYieldKg! <= 0) continue;
+      if (best == null || e.plantedOn.isAfter(best.plantedOn)) best = e;
     }
-    return best;
+    return best?.lastYieldKg;
   }
 
   @override
   Widget build(BuildContext context) {
     final t = AppLocalizations.of(context)!;
     final p = widget.p;
+    final farm = context.watch<FarmInputProvider>();
 
-    final crops = _all ? p.guides.map((g) => g.crop).toList() : p.profile!.cropTypes;
+    final crops = farm.cropIds;
     final insights = PriceInsightService().build(crops: crops, days: p.forecast, guides: p.guides);
 
     final rising = insights.where((i) => i.changePercent >= 0).length;
@@ -52,20 +54,6 @@ class _PricesTabState extends State<PricesTab> {
 
     return AnimatedTabList(items: [
       TabHeader(title: t.cropPrices, subtitle: t.pricesSubtitle),
-      const SizedBox(height: 12),
-      SizedBox(
-        width: double.infinity,
-        child: SegmentedButton<bool>(
-          showSelectedIcon: false,
-          style: const ButtonStyle(visualDensity: VisualDensity.compact),
-          segments: [
-            ButtonSegment(value: false, label: Text(t.priceMyCrops)),
-            ButtonSegment(value: true, label: Text(t.priceAllCrops)),
-          ],
-          selected: {_all},
-          onSelectionChanged: (s) => setState(() => _all = s.first),
-        ),
-      ),
       const SizedBox(height: 12),
       if (insights.isNotEmpty)
         Row(children: [
@@ -88,10 +76,10 @@ class _PricesTabState extends State<PricesTab> {
           ),
         ]),
       if (insights.isNotEmpty) const SizedBox(height: 12),
-      if (insights.isEmpty) Text(t.noPriceData),
+      if (insights.isEmpty) Text(crops.isEmpty ? t.priceNoMyCrops : t.noPriceData, style: const TextStyle(color: AppColors.muted, height: 1.4)),
       ...insights.map((i) => Padding(
         padding: const EdgeInsets.only(bottom: 14),
-        child: _PriceCard(insight: i, guide: _guideFor(i.crop), lastHarvest: _lastHarvest(i.crop)),
+        child: _PriceCard(insight: i, guide: _guideFor(i.crop), lastHarvest: _lastHarvestKg(farm, i.crop)),
       )),
       Container(
         padding: const EdgeInsets.all(12),
@@ -134,7 +122,7 @@ class _SummaryTile extends StatelessWidget {
 class _PriceCard extends StatelessWidget {
   final PriceInsight insight;
   final PlantingGuide? guide;
-  final CropRecord? lastHarvest;
+  final double? lastHarvest;
   const _PriceCard({required this.insight, required this.guide, required this.lastHarvest});
 
   @override
@@ -223,8 +211,8 @@ class _PriceCard extends StatelessWidget {
             _InfoRow(
               icon: Icons.payments_rounded,
               text: t.priceLastHarvestValue(
-                nf.format(lastHarvest!.yieldKg),
-                nf.format(lastHarvest!.yieldKg * i.predictedPrice),
+                nf.format(lastHarvest!),
+                nf.format(lastHarvest! * i.predictedPrice),
               ),
             ),
             const SizedBox(height: 10),

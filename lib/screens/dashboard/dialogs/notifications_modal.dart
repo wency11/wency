@@ -84,7 +84,7 @@ class _NotificationsSheet extends StatelessWidget {
                         child: Icon(n.icon, color: AppColors.leaf),
                       ),
                       title: Text(
-                        t.notifTitle(n.type),
+                        t.notifTitle(n),
                         style: TextStyle(
                           fontWeight: n.isRead ? FontWeight.w600 : FontWeight.w900,
                           fontSize: 14,
@@ -93,7 +93,7 @@ class _NotificationsSheet extends StatelessWidget {
                       subtitle: Padding(
                         padding: const EdgeInsets.only(top: 2),
                         child: Text(
-                          '${t.notifMessage(n.type)}\n${timeFmt.format(n.time)}',
+                          '${t.notifMessage(n)}\n${timeFmt.format(n.time)}',
                           style: const TextStyle(fontSize: 12, height: 1.3),
                         ),
                       ),
