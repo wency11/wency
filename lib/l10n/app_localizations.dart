@@ -1931,7 +1931,7 @@ abstract class AppLocalizations {
   /// No description provided for @dssBasisOwn.
   ///
   /// In en, this message translates to:
-  /// **'Your last harvest per hectare, for {ha} (±15%).'**
+  /// **'Your own harvest per hectare (from your records), for {ha} (±15%).'**
   String dssBasisOwn(String ha);
 
   /// No description provided for @dssBasisTypical.
@@ -2353,6 +2353,168 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Not planted'**
   String get farmUnallocated;
+
+  /// No description provided for @dssCost.
+  ///
+  /// In en, this message translates to:
+  /// **'Production cost (optional)'**
+  String get dssCost;
+
+  /// No description provided for @dssCostHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Total you spent or will spend on this crop: seeds, fertilizer, pesticide, labor, water. It is used to show your profit.'**
+  String get dssCostHint;
+
+  /// No description provided for @dssCostDetails.
+  ///
+  /// In en, this message translates to:
+  /// **'Cost details (optional)'**
+  String get dssCostDetails;
+
+  /// No description provided for @dssCostSeed.
+  ///
+  /// In en, this message translates to:
+  /// **'Seeds / seedlings'**
+  String get dssCostSeed;
+
+  /// No description provided for @dssCostFertilizer.
+  ///
+  /// In en, this message translates to:
+  /// **'Fertilizer'**
+  String get dssCostFertilizer;
+
+  /// No description provided for @dssCostPesticide.
+  ///
+  /// In en, this message translates to:
+  /// **'Pesticide'**
+  String get dssCostPesticide;
+
+  /// No description provided for @dssCostLabor.
+  ///
+  /// In en, this message translates to:
+  /// **'Labor and hired work'**
+  String get dssCostLabor;
+
+  /// No description provided for @dssCostOther.
+  ///
+  /// In en, this message translates to:
+  /// **'Other (water, fuel, transport)'**
+  String get dssCostOther;
+
+  /// No description provided for @dssYourCost.
+  ///
+  /// In en, this message translates to:
+  /// **'Your cost'**
+  String get dssYourCost;
+
+  /// No description provided for @dssProfit.
+  ///
+  /// In en, this message translates to:
+  /// **'Estimated profit'**
+  String get dssProfit;
+
+  /// No description provided for @dssRoi.
+  ///
+  /// In en, this message translates to:
+  /// **'Return on cost'**
+  String get dssRoi;
+
+  /// No description provided for @dssCostAsk.
+  ///
+  /// In en, this message translates to:
+  /// **'Add your production cost when you edit this crop to see your profit.'**
+  String get dssCostAsk;
+
+  /// No description provided for @dssProfitNote.
+  ///
+  /// In en, this message translates to:
+  /// **'Profit = expected income minus your cost. The low value uses the lower harvest and price, and the high value uses the higher ones.'**
+  String get dssProfitNote;
+
+  /// No description provided for @dssRecordHarvest.
+  ///
+  /// In en, this message translates to:
+  /// **'Record harvest'**
+  String get dssRecordHarvest;
+
+  /// No description provided for @dssRecordTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Record harvest: {crop}'**
+  String dssRecordTitle(String crop);
+
+  /// No description provided for @dssRecordSub.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter what really happened. Your records make the advice closer to your own farm.'**
+  String get dssRecordSub;
+
+  /// No description provided for @dssHarvestedOn.
+  ///
+  /// In en, this message translates to:
+  /// **'Date harvested'**
+  String get dssHarvestedOn;
+
+  /// No description provided for @dssActualYield.
+  ///
+  /// In en, this message translates to:
+  /// **'Total harvest'**
+  String get dssActualYield;
+
+  /// No description provided for @dssSoldPrice.
+  ///
+  /// In en, this message translates to:
+  /// **'Price you sold at'**
+  String get dssSoldPrice;
+
+  /// No description provided for @dssSoldPriceHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Estimated price: {price} per kg'**
+  String dssSoldPriceHint(String price);
+
+  /// No description provided for @dssRecIncome.
+  ///
+  /// In en, this message translates to:
+  /// **'Income'**
+  String get dssRecIncome;
+
+  /// No description provided for @dssRecProfit.
+  ///
+  /// In en, this message translates to:
+  /// **'Profit'**
+  String get dssRecProfit;
+
+  /// No description provided for @dssRecordSaved.
+  ///
+  /// In en, this message translates to:
+  /// **'Harvest saved. The land is free again for your next crop.'**
+  String get dssRecordSaved;
+
+  /// No description provided for @farmHistoryTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Harvest history'**
+  String get farmHistoryTitle;
+
+  /// No description provided for @farmHistorySub.
+  ///
+  /// In en, this message translates to:
+  /// **'Your recorded harvests, income and profit.'**
+  String get farmHistorySub;
+
+  /// No description provided for @farmHistoryDeleteTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete this record?'**
+  String get farmHistoryDeleteTitle;
+
+  /// No description provided for @farmHistoryDeleteBody.
+  ///
+  /// In en, this message translates to:
+  /// **'The {crop} harvest record will be removed.'**
+  String farmHistoryDeleteBody(String crop);
 }
 
 class _AppLocalizationsDelegate

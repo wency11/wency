@@ -1044,7 +1044,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String dssBasisOwn(String ha) {
-    return 'Your last harvest per hectare, for $ha (±15%).';
+    return 'Your own harvest per hectare (from your records), for $ha (±15%).';
   }
 
   @override
@@ -1335,4 +1335,96 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get farmUnallocated => 'Not planted';
+
+  @override
+  String get dssCost => 'Production cost (optional)';
+
+  @override
+  String get dssCostHint =>
+      'Total you spent or will spend on this crop: seeds, fertilizer, pesticide, labor, water. It is used to show your profit.';
+
+  @override
+  String get dssCostDetails => 'Cost details (optional)';
+
+  @override
+  String get dssCostSeed => 'Seeds / seedlings';
+
+  @override
+  String get dssCostFertilizer => 'Fertilizer';
+
+  @override
+  String get dssCostPesticide => 'Pesticide';
+
+  @override
+  String get dssCostLabor => 'Labor and hired work';
+
+  @override
+  String get dssCostOther => 'Other (water, fuel, transport)';
+
+  @override
+  String get dssYourCost => 'Your cost';
+
+  @override
+  String get dssProfit => 'Estimated profit';
+
+  @override
+  String get dssRoi => 'Return on cost';
+
+  @override
+  String get dssCostAsk =>
+      'Add your production cost when you edit this crop to see your profit.';
+
+  @override
+  String get dssProfitNote =>
+      'Profit = expected income minus your cost. The low value uses the lower harvest and price, and the high value uses the higher ones.';
+
+  @override
+  String get dssRecordHarvest => 'Record harvest';
+
+  @override
+  String dssRecordTitle(String crop) {
+    return 'Record harvest: $crop';
+  }
+
+  @override
+  String get dssRecordSub =>
+      'Enter what really happened. Your records make the advice closer to your own farm.';
+
+  @override
+  String get dssHarvestedOn => 'Date harvested';
+
+  @override
+  String get dssActualYield => 'Total harvest';
+
+  @override
+  String get dssSoldPrice => 'Price you sold at';
+
+  @override
+  String dssSoldPriceHint(String price) {
+    return 'Estimated price: $price per kg';
+  }
+
+  @override
+  String get dssRecIncome => 'Income';
+
+  @override
+  String get dssRecProfit => 'Profit';
+
+  @override
+  String get dssRecordSaved =>
+      'Harvest saved. The land is free again for your next crop.';
+
+  @override
+  String get farmHistoryTitle => 'Harvest history';
+
+  @override
+  String get farmHistorySub => 'Your recorded harvests, income and profit.';
+
+  @override
+  String get farmHistoryDeleteTitle => 'Delete this record?';
+
+  @override
+  String farmHistoryDeleteBody(String crop) {
+    return 'The $crop harvest record will be removed.';
+  }
 }

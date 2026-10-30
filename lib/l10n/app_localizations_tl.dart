@@ -1060,7 +1060,7 @@ class AppLocalizationsTl extends AppLocalizations {
 
   @override
   String dssBasisOwn(String ha) {
-    return 'Ang huling ani mo kada ektarya, para sa $ha (±15%).';
+    return 'Ang sarili mong ani kada ektarya (mula sa talaan mo), para sa $ha (±15%).';
   }
 
   @override
@@ -1351,4 +1351,96 @@ class AppLocalizationsTl extends AppLocalizations {
 
   @override
   String get farmUnallocated => 'Hindi pa natataniman';
+
+  @override
+  String get dssCost => 'Gastos sa produksyon (opsyonal)';
+
+  @override
+  String get dssCostHint =>
+      'Kabuuang nagastos o gagastusin mo sa pananim na ito: binhi, abono, pestisidyo, upa, tubig. Ginagamit ito para makita ang tubo mo.';
+
+  @override
+  String get dssCostDetails => 'Detalye ng gastos (opsyonal)';
+
+  @override
+  String get dssCostSeed => 'Binhi / punla';
+
+  @override
+  String get dssCostFertilizer => 'Abono';
+
+  @override
+  String get dssCostPesticide => 'Pestisidyo';
+
+  @override
+  String get dssCostLabor => 'Upa at manggagawa';
+
+  @override
+  String get dssCostOther => 'Iba pa (tubig, gasolina, pamasahe)';
+
+  @override
+  String get dssYourCost => 'Gastos mo';
+
+  @override
+  String get dssProfit => 'Tinatayang tubo';
+
+  @override
+  String get dssRoi => 'Balik sa puhunan';
+
+  @override
+  String get dssCostAsk =>
+      'Ilagay ang gastos sa produksyon kapag ine-edit ang pananim para makita ang tubo mo.';
+
+  @override
+  String get dssProfitNote =>
+      'Tubo = inaasahang kita bawas ang gastos mo. Ang mababang bilang ay gumagamit ng mas mababang ani at presyo, at ang mataas ay ng mas mataas.';
+
+  @override
+  String get dssRecordHarvest => 'I-record ang ani';
+
+  @override
+  String dssRecordTitle(String crop) {
+    return 'I-record ang ani: $crop';
+  }
+
+  @override
+  String get dssRecordSub =>
+      'Ilagay ang totoong nangyari. Ang mga talaan mo ay nagpapalapit ng payo sa sarili mong bukid.';
+
+  @override
+  String get dssHarvestedOn => 'Petsa ng ani';
+
+  @override
+  String get dssActualYield => 'Kabuuang ani';
+
+  @override
+  String get dssSoldPrice => 'Presyong naibenta mo';
+
+  @override
+  String dssSoldPriceHint(String price) {
+    return 'Tantiyang presyo: $price kada kg';
+  }
+
+  @override
+  String get dssRecIncome => 'Kita';
+
+  @override
+  String get dssRecProfit => 'Tubo';
+
+  @override
+  String get dssRecordSaved =>
+      'Na-save ang ani. Malaya na ulit ang lupa para sa susunod mong tanim.';
+
+  @override
+  String get farmHistoryTitle => 'Kasaysayan ng ani';
+
+  @override
+  String get farmHistorySub => 'Ang mga naitala mong ani, kita at tubo.';
+
+  @override
+  String get farmHistoryDeleteTitle => 'Burahin ang talaang ito?';
+
+  @override
+  String farmHistoryDeleteBody(String crop) {
+    return 'Buburahin ang talaan ng ani ng $crop.';
+  }
 }

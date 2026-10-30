@@ -8,6 +8,7 @@ import '../../../dashboard_data.dart';
 import '../../../l10n/app_localizations.dart';
 import '../../../main.dart';
 import '../../../models/farm_planting.dart';
+import '../../../models/harvest_record.dart';
 import '../../../providers/farm_input_provider.dart';
 import '../../../services/dss_service.dart';
 import '../../../widgets/common_widgets.dart';
@@ -27,6 +28,22 @@ class FarmTab extends StatelessWidget {
     return null;
   }
 
+  Future<void> _confirmDelete(BuildContext context, FarmInputProvider farm, HarvestRecord r) async {
+    final t = AppLocalizations.of(context)!;
+    final ok = await showDialog<bool>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: Text(t.farmHistoryDeleteTitle),
+        content: Text(t.farmHistoryDeleteBody(t.cropLabel(r.crop))),
+        actions: [
+          TextButton(onPressed: () => Navigator.pop(ctx, false), child: Text(t.cancel)),
+          FilledButton(onPressed: () => Navigator.pop(ctx, true), child: Text(t.dssDelete)),
+        ],
+      ),
+    );
+    if (ok == true) farm.removeRecord(r.id);
+  }
+
   @override
   Widget build(BuildContext context) {
     final t = AppLocalizations.of(context)!;
@@ -38,7 +55,7 @@ class FarmTab extends StatelessWidget {
     final totalLand = farm.landTotal;
     var expectedKg = 0.0;
     for (final pl in plantings) {
-      expectedKg += DssService.estimate(pl)?.kgMid ?? 0;
+      expectedKg += farm.estimateFor(pl)?.kgMid ?? 0;
     }
 
     return AnimatedTabList(items: [
@@ -95,8 +112,88 @@ class FarmTab extends StatelessWidget {
         ),
       ] else
         _EmptyFarm(onAdd: onOpenDss),
+      if (farm.history.isNotEmpty) ...[
+        const SizedBox(height: 18),
+        SectionTitle(icon: Icons.history_rounded, text: t.farmHistoryTitle, subtitle: t.farmHistorySub),
+        const SizedBox(height: 8),
+        _HistorySummary(farm: farm),
+        const SizedBox(height: 10),
+        ...farm.history.map((r) => Padding(
+          padding: const EdgeInsets.only(bottom: 10),
+          child: _HistoryCard(record: r, onDelete: () => _confirmDelete(context, farm, r)),
+        )),
+      ],
       const SizedBox(height: 24),
     ]);
+  }
+}
+
+/// Kabuuang kita at tubo ng lahat ng naitalang ani.
+class _HistorySummary extends StatelessWidget {
+  final FarmInputProvider farm;
+  const _HistorySummary({required this.farm});
+
+  @override
+  Widget build(BuildContext context) {
+    final t = AppLocalizations.of(context)!;
+    return Row(children: [
+      Expanded(child: _StatTile(icon: Icons.scale_rounded, color: AppColors.soil, value: DssFmt.kg(farm.totalYieldKg), label: t.farmTotalHarvest)),
+      const SizedBox(width: 10),
+      Expanded(child: _StatTile(icon: Icons.payments_rounded, color: AppColors.leaf, value: DssFmt.peso(farm.totalIncome), label: t.dssRecIncome)),
+      if (farm.hasProfitRecords) ...[
+        const SizedBox(width: 10),
+        Expanded(
+          child: _StatTile(
+            icon: Icons.savings_rounded,
+            color: farm.totalProfit >= 0 ? AppColors.leaf : AppColors.soil,
+            value: '${farm.totalProfit < 0 ? '-' : ''}${DssFmt.peso(farm.totalProfit.abs())}',
+            label: t.dssRecProfit,
+          ),
+        ),
+      ],
+    ]);
+  }
+}
+
+class _HistoryCard extends StatelessWidget {
+  final HarvestRecord record;
+  final VoidCallback onDelete;
+  const _HistoryCard({required this.record, required this.onDelete});
+
+  @override
+  Widget build(BuildContext context) {
+    final t = AppLocalizations.of(context)!;
+    final r = record;
+    final profit = r.profit;
+    final nf = NumberFormat('#,###');
+    return GlassCard(
+      padding: const EdgeInsets.fromLTRB(14, 12, 6, 12),
+      child: Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
+        IconBubble(icon: Icons.check_circle_rounded, color: AppColors.forCrop(r.crop), size: 42),
+        const SizedBox(width: 12),
+        Expanded(
+          child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+            Text(t.cropLabel(r.crop), style: const TextStyle(fontWeight: FontWeight.w900, fontSize: 15.5)),
+            Text(t.harvestedOn(r.harvestedOn), style: const TextStyle(fontSize: 12, color: AppColors.muted)),
+            const SizedBox(height: 6),
+            Text('${DssFmt.kg(r.yieldKg)} × ${DssFmt.pesoKg(r.pricePerKg)} = ${DssFmt.peso(r.income)}',
+                style: const TextStyle(fontWeight: FontWeight.w800, fontSize: 13)),
+            if (r.costPhp != null)
+              Text('${t.dssYourCost}: ${DssFmt.peso(r.costPhp!)}', style: const TextStyle(fontSize: 12.5, color: AppColors.muted)),
+            if (profit != null)
+              Text(
+                '${t.dssRecProfit}: ${profit < 0 ? '-' : ''}${DssFmt.peso(profit.abs())}',
+                style: TextStyle(fontWeight: FontWeight.w900, fontSize: 13, color: profit >= 0 ? AppColors.leaf : AppColors.soil),
+              ),
+            Text(t.farmYieldPerHa(nf.format(r.kgPerHa.round())), style: const TextStyle(fontSize: 12, color: AppColors.muted)),
+          ]),
+        ),
+        IconButton(
+          onPressed: onDelete,
+          icon: const Icon(Icons.delete_outline_rounded, size: 20, color: AppColors.muted),
+        ),
+      ]),
+    );
   }
 }
 
@@ -206,20 +303,22 @@ class _LandCard extends StatelessWidget {
       child: Padding(
         padding: const EdgeInsets.all(18),
         child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-          Row(children: [
-            Expanded(child: Text(t.totalLandSize, style: const TextStyle(color: AppColors.muted, fontWeight: FontWeight.w700))),
-            SegmentedButton<bool>(
+          Text(t.totalLandSize, style: const TextStyle(color: AppColors.muted, fontWeight: FontWeight.w700)),
+          const SizedBox(height: 10),
+          SizedBox(
+            width: double.infinity,
+            child: SegmentedButton<bool>(
               showSelectedIcon: false,
               style: const ButtonStyle(visualDensity: VisualDensity.compact),
               segments: [
-                ButtonSegment(value: false, label: Text(t.dssUnitHa)),
-                ButtonSegment(value: true, label: Text(t.dssUnitSqm)),
+                ButtonSegment(value: false, label: Text(t.dssUnitHa, maxLines: 1, overflow: TextOverflow.ellipsis)),
+                ButtonSegment(value: true, label: Text(t.dssUnitSqm, maxLines: 1, overflow: TextOverflow.ellipsis)),
               ],
               selected: {sqm},
               onSelectionChanged: (s) => onSetUnit(s.first),
             ),
-          ]),
-          const SizedBox(height: 4),
+          ),
+          const SizedBox(height: 8),
           Row(crossAxisAlignment: CrossAxisAlignment.end, children: [
             Flexible(
               child: TweenAnimationBuilder<double>(
@@ -348,7 +447,7 @@ class _CropPlotCard extends StatelessWidget {
     final percent = totalHectares > 0 ? DssFmt.percent(planting.hectares / totalHectares * 100) : '0';
     final g = guide;
     final facts = factsFor(crop);
-    final est = DssService.estimate(planting);
+    final est = context.watch<FarmInputProvider>().estimateFor(planting);
     final days = DateTime.now().difference(planting.plantedOn).inDays;
     final notYet = days < 0;
     final ready = facts != null && facts.hasHarvestDays && days >= facts.minDays!;
@@ -484,24 +583,42 @@ class _EstimateBox extends StatelessWidget {
       width: double.infinity,
       padding: const EdgeInsets.all(10),
       decoration: BoxDecoration(color: AppColors.leaf.withValues(alpha: 0.08), borderRadius: BorderRadius.circular(12)),
-      child: Row(children: [
-        Expanded(
-          child: _Mini(
-            label: t.dssExpectedYield,
-            value: DssFmt.kg(est.kgMid),
-            sub: '${DssFmt.kg(est.kgLow)} - ${DssFmt.kg(est.kgHigh)}',
+      child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+        Row(children: [
+          Expanded(
+            child: _Mini(
+              label: t.dssExpectedYield,
+              value: DssFmt.kg(est.kgMid),
+              sub: '${DssFmt.kg(est.kgLow)} - ${DssFmt.kg(est.kgHigh)}',
+            ),
           ),
-        ),
-        const SizedBox(width: 10),
-        Expanded(
-          child: est.incomeMid == null
-              ? _Mini(label: t.dssExpectedIncome, value: '-', sub: t.dssNoPrice)
-              : _Mini(
-            label: t.dssExpectedIncome,
-            value: DssFmt.peso(est.incomeMid!),
-            sub: '${DssFmt.peso(est.incomeLow!)} - ${DssFmt.peso(est.incomeHigh!)}',
+          const SizedBox(width: 10),
+          Expanded(
+            child: est.incomeMid == null
+                ? _Mini(label: t.dssExpectedIncome, value: '-', sub: t.dssNoPrice)
+                : _Mini(
+              label: t.dssExpectedIncome,
+              value: DssFmt.peso(est.incomeMid!),
+              sub: '${DssFmt.peso(est.incomeLow!)} - ${DssFmt.peso(est.incomeHigh!)}',
+            ),
           ),
-        ),
+        ]),
+        if (est.hasProfit) ...[
+          const SizedBox(height: 10),
+          Row(children: [
+            Expanded(
+              child: _Mini(
+                label: t.dssProfit,
+                value: '${est.profitMid! < 0 ? '-' : ''}${DssFmt.peso(est.profitMid!.abs())}',
+                sub: '${DssFmt.peso(est.profitLow!)} - ${DssFmt.peso(est.profitHigh!)}',
+              ),
+            ),
+            const SizedBox(width: 10),
+            Expanded(
+              child: _Mini(label: t.dssYourCost, value: DssFmt.peso(est.cost!), sub: ''),
+            ),
+          ]),
+        ],
       ]),
     );
   }

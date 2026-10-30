@@ -305,7 +305,7 @@
   "dssLikely": "Malamang",
   "dssHigh": "Mataas",
   "dssHowComputed": "Paano kinuwenta",
-  "dssBasisOwn": "Ang huling ani mo kada ektarya, para sa {ha} (±15%).",
+  "dssBasisOwn": "Ang sarili mong ani kada ektarya (mula sa talaan mo), para sa {ha} (±15%).",
   "dssBasisTypical": "Karaniwang ani na mga {kgHa} kg kada ektarya, para sa {ha}.",
   "dssPriceUsed": "Presyong ginamit",
   "dssPriceAdvisory": "Payo sa presyo",
@@ -583,5 +583,53 @@
   },
   "dssLandSet": "Ilagay ang sukat",
   "dssLandNotSet": "Ilagay ang kabuuang sukat ng lupa para makita kung ilan ang sakop ng bawat pananim.",
-  "farmUnallocated": "Hindi pa natataniman"
+  "farmUnallocated": "Hindi pa natataniman",
+  "dssCost": "Gastos sa produksyon (opsyonal)",
+  "dssCostHint": "Kabuuang nagastos o gagastusin mo sa pananim na ito: binhi, abono, pestisidyo, upa, tubig. Ginagamit ito para makita ang tubo mo.",
+  "dssCostDetails": "Detalye ng gastos (opsyonal)",
+  "dssCostSeed": "Binhi / punla",
+  "dssCostFertilizer": "Abono",
+  "dssCostPesticide": "Pestisidyo",
+  "dssCostLabor": "Upa at manggagawa",
+  "dssCostOther": "Iba pa (tubig, gasolina, pamasahe)",
+  "dssYourCost": "Gastos mo",
+  "dssProfit": "Tinatayang tubo",
+  "dssRoi": "Balik sa puhunan",
+  "dssCostAsk": "Ilagay ang gastos sa produksyon kapag ine-edit ang pananim para makita ang tubo mo.",
+  "dssProfitNote": "Tubo = inaasahang kita bawas ang gastos mo. Ang mababang bilang ay gumagamit ng mas mababang ani at presyo, at ang mataas ay ng mas mataas.",
+  "dssRecordHarvest": "I-record ang ani",
+  "dssRecordTitle": "I-record ang ani: {crop}",
+  "@dssRecordTitle": {
+    "placeholders": {
+      "crop": {
+        "type": "String"
+      }
+    }
+  },
+  "dssRecordSub": "Ilagay ang totoong nangyari. Ang mga talaan mo ay nagpapalapit ng payo sa sarili mong bukid.",
+  "dssHarvestedOn": "Petsa ng ani",
+  "dssActualYield": "Kabuuang ani",
+  "dssSoldPrice": "Presyong naibenta mo",
+  "dssSoldPriceHint": "Tantiyang presyo: {price} kada kg",
+  "@dssSoldPriceHint": {
+    "placeholders": {
+      "price": {
+        "type": "String"
+      }
+    }
+  },
+  "dssRecIncome": "Kita",
+  "dssRecProfit": "Tubo",
+  "dssRecordSaved": "Na-save ang ani. Malaya na ulit ang lupa para sa susunod mong tanim.",
+  "farmHistoryTitle": "Kasaysayan ng ani",
+  "farmHistorySub": "Ang mga naitala mong ani, kita at tubo.",
+  "farmHistoryDeleteTitle": "Burahin ang talaang ito?",
+  "farmHistoryDeleteBody": "Buburahin ang talaan ng ani ng {crop}.",
+  "@farmHistoryDeleteBody": {
+    "placeholders": {
+      "crop": {
+        "type": "String"
+      }
+    }
+  }
 }

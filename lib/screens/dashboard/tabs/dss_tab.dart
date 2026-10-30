@@ -12,6 +12,7 @@ import '../../../widgets/common_widgets.dart';
 import '../../../widgets/dss_common.dart';
 import '../../../widgets/planting_graph.dart';
 import '../dss/farm_map_card.dart';
+import '../dss/harvest_record_sheet.dart';
 import '../dss/planting_form_sheet.dart';
 import '../dss/total_land_sheet.dart';
 
@@ -27,6 +28,16 @@ class DssTab extends StatelessWidget {
   Future<void> _edit(BuildContext context, FarmInputProvider input, FarmPlanting p) async {
     final r = await showPlantingForm(context, existing: p);
     if (r != null) input.update(r);
+  }
+
+  Future<void> _record(BuildContext context, FarmInputProvider input, FarmPlanting p) async {
+    final t = AppLocalizations.of(context)!;
+    final r = await showHarvestRecordSheet(context, p, historyKgPerHa: input.historyKgPerHa(p.crop));
+    if (r == null) return;
+    input.recordHarvest(p.id, r);
+    if (context.mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(t.dssRecordSaved)));
+    }
   }
 
   Future<void> _delete(BuildContext context, FarmInputProvider input, FarmPlanting p) async {
@@ -60,6 +71,7 @@ class DssTab extends StatelessWidget {
         input: input,
         onAdd: () => _add(context, input),
         onEdit: (p) => _edit(context, input, p),
+        onRecord: (p) => _record(context, input, p),
         onDelete: (p) => _delete(context, input, p),
       ),
       if (sel != null) ...[
@@ -125,24 +137,21 @@ class _LandCard extends StatelessWidget {
           if (total == null)
             Text(t.dssLandNotSet, style: const TextStyle(color: AppColors.muted, height: 1.35))
           else ...[
-            Row(
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                Expanded(
-                  child: Text(DssFmt.area(total, sqm: sqm),
-                      style: const TextStyle(fontSize: 30, fontWeight: FontWeight.w900, color: AppColors.leaf)),
-                ),
-                SegmentedButton<bool>(
-                  showSelectedIcon: false,
-                  style: const ButtonStyle(visualDensity: VisualDensity.compact),
-                  segments: [
-                    ButtonSegment(value: false, label: Text(t.dssUnitHa)),
-                    ButtonSegment(value: true, label: Text(t.dssUnitSqm)),
-                  ],
-                  selected: {sqm},
-                  onSelectionChanged: (s) => input.setUseSqm(s.first),
-                ),
-              ],
+            Text(DssFmt.area(total, sqm: sqm),
+                style: const TextStyle(fontSize: 30, fontWeight: FontWeight.w900, color: AppColors.leaf)),
+            const SizedBox(height: 8),
+            SizedBox(
+              width: double.infinity,
+              child: SegmentedButton<bool>(
+                showSelectedIcon: false,
+                style: const ButtonStyle(visualDensity: VisualDensity.compact),
+                segments: [
+                  ButtonSegment(value: false, label: Text(t.dssUnitHa, maxLines: 1, overflow: TextOverflow.ellipsis)),
+                  ButtonSegment(value: true, label: Text(t.dssUnitSqm, maxLines: 1, overflow: TextOverflow.ellipsis)),
+                ],
+                selected: {sqm},
+                onSelectionChanged: (s) => input.setUseSqm(s.first),
+              ),
             ),
             const SizedBox(height: 10),
             ClipRRect(
@@ -188,9 +197,10 @@ class _InputCard extends StatelessWidget {
   final FarmInputProvider input;
   final VoidCallback onAdd;
   final void Function(FarmPlanting) onEdit;
+  final void Function(FarmPlanting) onRecord;
   final void Function(FarmPlanting) onDelete;
 
-  const _InputCard({required this.input, required this.onAdd, required this.onEdit, required this.onDelete});
+  const _InputCard({required this.input, required this.onAdd, required this.onEdit, required this.onRecord, required this.onDelete});
 
   @override
   Widget build(BuildContext context) {
@@ -246,7 +256,16 @@ class _InputCard extends StatelessWidget {
           if (sel != null) ...[
             const SizedBox(height: 12),
             _SelectedSummary(p: sel, sqm: input.useSqm),
-            const SizedBox(height: 4),
+            const SizedBox(height: 10),
+            SizedBox(
+              width: double.infinity,
+              child: FilledButton.tonalIcon(
+                onPressed: () => onRecord(sel),
+                icon: const Icon(Icons.inventory_2_rounded, size: 18),
+                label: Text(t.dssRecordHarvest),
+              ),
+            ),
+            const SizedBox(height: 2),
             Row(
               children: [
                 TextButton.icon(
@@ -278,7 +297,7 @@ class _SelectedSummary extends StatelessWidget {
   Widget build(BuildContext context) {
     final t = AppLocalizations.of(context)!;
     final grown = DateTime.now().difference(p.plantedOn).inDays;
-    final est = DssService.estimate(p);
+    final est = context.watch<FarmInputProvider>().estimateFor(p);
     final harvest = (est?.harvestFrom != null && est?.harvestTo != null)
         ? '${DssFmt.date(est!.harvestFrom!)} – ${DssFmt.date(est.harvestTo!)}'
         : t.dssHarvestYearRound;
@@ -458,7 +477,7 @@ class _HarvestIncome extends StatelessWidget {
   Widget build(BuildContext context) {
     final t = AppLocalizations.of(context)!;
     final sqm = context.watch<FarmInputProvider>().useSqm;
-    final e = DssService.estimate(planting);
+    final e = context.watch<FarmInputProvider>().estimateFor(planting);
     if (e == null) {
       return GlassCard(padding: const EdgeInsets.all(14), child: Text(t.dssNoEstimate));
     }
@@ -492,6 +511,13 @@ class _HarvestIncome extends StatelessWidget {
               ),
             ],
           ),
+          if (e.hasProfit) ...[
+            const SizedBox(height: 10),
+            _ProfitBox(e: e),
+          ] else if (e.hasPrice) ...[
+            const SizedBox(height: 10),
+            _line(Icons.lightbulb_rounded, t.dssProfit, t.dssCostAsk),
+          ],
           const SizedBox(height: 14),
           _RangeBar(low: e.kgLow, mid: e.kgMid, high: e.kgHigh),
           const SizedBox(height: 12),
@@ -501,6 +527,60 @@ class _HarvestIncome extends StatelessWidget {
             const SizedBox(height: 6),
             _line(Icons.sell_rounded, t.dssPriceUsed, '${DssFmt.pesoKg(e.priceLow!)} – ${DssFmt.pesoKg(e.priceHigh!)} / kg'),
           ],
+        ],
+      ),
+    );
+  }
+}
+
+/// Gastos, tubo (kita bawas gastos) at balik sa puhunan.
+class _ProfitBox extends StatelessWidget {
+  final HarvestEstimate e;
+  const _ProfitBox({required this.e});
+
+  @override
+  Widget build(BuildContext context) {
+    final t = AppLocalizations.of(context)!;
+    final profit = e.profitMid!;
+    final good = profit >= 0;
+    final color = good ? AppColors.leaf : AppColors.soil;
+    final roi = e.roiPercent;
+
+    return Container(
+      padding: const EdgeInsets.all(12),
+      decoration: BoxDecoration(color: color.withValues(alpha: 0.10), borderRadius: BorderRadius.circular(16)),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(children: [
+            Icon(good ? Icons.savings_rounded : Icons.trending_down_rounded, size: 16, color: color),
+            const SizedBox(width: 5),
+            Expanded(
+              child: Text(t.dssProfit, style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w800, color: AppColors.muted)),
+            ),
+            if (roi != null)
+              Text('${t.dssRoi}: ${roi >= 0 ? '+' : ''}${roi.round()}%',
+                  style: TextStyle(fontSize: 12, fontWeight: FontWeight.w900, color: color)),
+          ]),
+          const SizedBox(height: 6),
+          FittedBox(
+            fit: BoxFit.scaleDown,
+            alignment: Alignment.centerLeft,
+            child: Text('${good ? '' : '-'}${DssFmt.peso(profit.abs())}',
+                style: TextStyle(fontSize: 24, fontWeight: FontWeight.w900, color: color)),
+          ),
+          const SizedBox(height: 2),
+          Text(
+            '${DssFmt.peso(e.profitLow!)} – ${DssFmt.peso(e.profitHigh!)}',
+            style: const TextStyle(fontSize: 11.5, fontWeight: FontWeight.w700, color: AppColors.muted),
+          ),
+          const SizedBox(height: 8),
+          Row(children: [
+            Expanded(child: Text(t.dssYourCost, style: const TextStyle(fontSize: 12.5, color: AppColors.muted, fontWeight: FontWeight.w700))),
+            Text(DssFmt.peso(e.cost!), style: const TextStyle(fontSize: 12.5, fontWeight: FontWeight.w900, color: AppColors.ink)),
+          ]),
+          const SizedBox(height: 6),
+          Text(t.dssProfitNote, style: const TextStyle(fontSize: 11, color: AppColors.muted, height: 1.3)),
         ],
       ),
     );
